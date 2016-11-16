@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css" href="themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style="height:150px;">
+        <div class="nav-bg">
+            <div class="sub-nav"><a href="/ns/software/WebComponents.exe" target="_blank">VLC视频播放插件</a>&#12288;|&#12288;<a href="/ns/software/VideoDetective-Setup.exe" target="_blank">批量注册与视频分析工具</a>&#12288;|&#12288;<a
+                    href="#">帮助文档</a></div>
+            <div class="nav-container">
+                <ul class="nav">
+                    <a href="index.html">
+                        <li>首页</li>
+                    </a>
+                    <a href="monitor.html">
+                        <li>实时监控</li>
+                    </a>
+                    <a href="faceDataBase.html">
+                        <li>人像库管理</li>
+                    </a>
+                    <a href="search.html">
+                        <li>查询检索</li>
+                    </a>
+                    <a href="judge.html">
+                        <li>报警研判</li>
+                    </a>
+                    <a href="setting.html">
+                        <li class="active">系统管理</li>
+                    </a>
+                </ul>
+
+                <div class="nav-right">
+                    <span></span> <a href="#" class="logout">注销</a>
+                </div>
+            </div>
+        </div>
+    </div> <!--导航-->
+    <!-- 左侧-->
+    <div data-options="region:'west',split:false,iconCls:'icon-ok',border:false" style="width:300px;">
+        <div class="easyui-panel" title="设置菜单" data-options="fit:true,border:false,iconCls:'icon-application_view_list'" style="padding:5px;">
+            <ul id="menu" class="easyui-tree" data-options="animate:true,lines:true">
+                <li data-options="iconCls:'icon-application_view_list'">
+                    <span>设置清单</span>
+                    <ul>
+                        <li data-options="iconCls:'icon-2012080404391',attributes:{uri:'setting-son/cameraSet.html'}">
+                            摄像机
+                        </li>
+                        <li data-options="iconCls:'icon-2012080404391',attributes:{uri:'setting-son/userSet.html'}">用户
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <div data-options="region:'center',border:false">   <!--右侧-->
+        <div class="easyui-tabs" id="tabs" data-options="fit:true,border:false">
+        </div>
+    </div>
+    <script>
+        $ ( function () {
+            //禁止普通用户访问
+            if ( getCookie ( "user" ) != "admin" ) {
+                window.history.go ( -1 );
+            }
+            //禁止普通用户访问结束
+            var menu1 = $ ( '#menu' ).tree ( 'getChildren' )[ 1 ];
+            $ ( '#menu' ).tree ( 'select' , menu1.target );
+
+            $ ( '#menu' ).tree ( {
+                onSelect : function ( node ) {
+                    var text = node.text;
+                    var uri = node.attributes.uri;  //link uri
+                    if ( text == "设置菜单" ) {
+                        return;
+                    }
+                    var is_exists = $ ( '#tabs' ).tabs ( 'exists' , text );
+                    if ( is_exists ) {
+                        $ ( '#tabs' ).tabs ( 'close' , text );
+//                        return;
+                    }
+                    $ ( '#tabs' ).tabs ( 'add' , {
+                        title : text ,
+                        iconCls : 'icon-2012080404391' ,
+                        content : '<iframe  frameborder="0" width="100%" height="100%" src="' + uri + '" style="width:100%;height:99%;"></iframe>' ,
+                        closable : true
+                    } );
+                } ,
+                onLoadSuccess : function ( node , data ) {
+                    $ ( "#menu ul li:eq(0)" ).find ( "div" ).addClass ( "tree-node-selected" );   //设置第一个节点高亮
+                    var n = $ ( "#menu" ).tree ( "getSelected" );
+                    if ( n != null ) {
+                        $ ( "#menu" ).tree ( "select" , n.target );    //相当于默认点击了一下第一个节点，执行onSelect方法
+                    }
+                }
+
+            } );
+
+        } )
+    </script>
+</div>
+</body>
+</html>
+
+

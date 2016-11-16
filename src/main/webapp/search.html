@@ -1,0 +1,516 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css"
+          href="themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <!-- <script src="//cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script> -->
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script> 
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/uploadPreview.js"></script>
+    <script type="text/javascript" src="js/search/search.js"></script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true" id="ly">
+    <div data-options="region:'north'" style="height: 150px;">
+        <div class="nav-bg">
+            <div class="sub-nav"><a href="/ns/software/WebComponents.exe" target="_blank">VLC视频播放插件</a>&#12288;|&#12288;<a href="/ns/software/VideoDetective-Setup.exe" target="_blank">批量注册与视频分析工具</a>&#12288;|&#12288;<a
+                    href="#">帮助文档</a></div>
+            <div class="nav-container">
+                <ul class="nav">
+                    <a href="index.html">
+                        <li>首页</li>
+                    </a>
+                    <a href="monitor.html">
+                        <li>实时监控</li>
+                    </a>
+                    <a href="faceDataBase.html">
+                        <li>人像库管理</li>
+                    </a>
+                    <a href="search.html">
+                        <li class="active">查询检索</li>
+                    </a>
+                    <a href="judge.html">
+                        <li>报警研判</li>
+                    </a>
+                </ul>
+                <div class="nav-right">
+                    <span></span> <a href="#" class="logout">注销</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--导航-->
+    <!--图片条件搜索 左侧-->
+    <div data-options="region:'west',split:false,iconCls:'icon-ok',border:false"
+         style="width: 410px;">
+        <div id="searchTab" class="easyui-tabs" data-options="fit:true,border:false,tabPosition:'left',headerWidth:100">
+            <div title="人像检索" data-options="iconCls:'icon-my_search3'" style="overflow:auto;padding:10px;">
+                <div class="dialog-line" id="imgPriview">
+                    <img src="img/facebg.jpg" alt="选择图片上传" id="imgShow">
+                </div>
+                <br>
+                <script type="text/javascript">
+                    function onIFrameLoaded ( iframe ) {
+                        var doc = iframe.contentWindow.document;
+                        var text = doc.body.innerText;
+                        if ( text != '' ) {
+                            window.parent.loadImgSearchResult ( text );
+                        }
+                    }
+                </script>
+                <iframe id="uploadIframe" name="uploadIframe" src="about:blank" frameborder="0" style="display: none;"
+                        onload="onIFrameLoaded(this);"></iframe>
+                <form action=" /ns/peopleBase/getBase64" method="post"
+                      enctype="multipart/form-data" id="imgSearchForm" target="uploadIframe">
+                    <div class="dialog-line" style="text-align: center">
+                        <a href="#" class="fileUp">
+                            <input type="file" id="uploadImg" name="faceImg">
+                        </a>
+                        <input type="hidden" name="pageSize" value="10">
+                        <input type="hidden" name="pageNum" value="1">
+                    </div>
+                    <div class="dialog-line">
+                        <div class="dialog-line-label" style="padding-bottom: 5px;">查询库类型:</div>
+                        <select id="ofFd" class="easyui-combobox" name="libType" style="width:280px;">
+                        </select>
+                    </div>
+                    <div class="dialog-line">
+                        <div class="dialog-line-label" style="padding-bottom: 5px;">阈值:</div>
+                        <select class="easyui-combobox" id="threshold" name="threshold" style="width:280px;">
+                            <option value="0.1">0.1</option>
+                            <option value="0.2">0.2</option>
+                            <option value="0.3">0.3</option>
+                            <option value="0.4">0.4</option>
+                            <option value="0.5">0.5</option>
+                            <option value="0.6" selected>0.6</option>
+                            <option value="0.7">0.7</option>
+                            <option value="0.8">0.8</option>
+                            <option value="0.9">0.9</option>
+                            <option value="1.0">1.0</option>
+                        </select>
+                    </div>
+                    <div class="dialog-line">
+                        <div class="dialog-line-label" style="padding-bottom: 5px;">个数上限:</div>
+                        <select class="easyui-combobox" name="topN" id="topN" style="width:280px;">
+                            <option value="10">10</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    <div class="dialog-line">
+                        <a href="#" class="easyui-linkbutton" id="submitImgSearchForm" iconCls="icon-my_search3"
+                           style="width:262px;text-align: center">检索</a>
+                    </div>
+                    <p class="errorMsg"></p>
+                </form>
+                <h3 style="text-align:center;margin-top:30px;">点击 <a href="/ns/software/VideoDetective-Setup.exe" target="_blank"
+                                                                     style="color:#E2473E;">下载</a> 视频检索工具</h3>
+            </div>
+
+            <!-- 条件检索 -->
+            <div title="条件检索" data-options="iconCls:'icon-my_search1'" style="overflow: auto; padding: 10px;"
+                 id="conditionSearch">
+                <div class="dialog-line">
+                    <div class="dialog-line-label" style="padding-bottom: 5px;">起始日期(时间):</div>
+                    <input class="easyui-datebox" name="dtFrom" style="width: 150px;"/>
+                    <input class="easyui-timespinner" name="dtFromTime" style="width: 130px;" value="00:00:00"
+                           data-options="showSeconds:true"/>
+                </div>
+                <div class="dialog-line">
+                    <div class="dialog-line-label" style="padding-bottom: 5px;">终止日期(时间):</div>
+                    <input class="easyui-datebox " name="dtTo" style="width: 150px;"/>
+                    <input class="easyui-timespinner" name="dtToTime" style="width:130px;" value="23:59:59"
+                           data-options="showSeconds:true"/>
+                </div>
+                <div class="dialog-line">
+                    <div class="dialog-line-label" style="padding-bottom: 5px;">摄像头:</div>
+                    <select class="easyui-combotree" id="strSourceId"
+                            style="width: 290px;"></select>
+                </div>
+                <div class="dialog-line">
+                    <div class="dialog-line-label" style="padding-bottom: 5px;">人员姓名:</div>
+                    <input class="easyui-validatebox" name="username"
+                           data-options="required:false" style="width: 287px;"/>
+                </div>
+                <div class="dialog-line">
+                    <div class="dialog-line-label" style="padding-bottom: 5px;">检索类型:</div>
+                    <select class="easyui-combobox" id="searchType"
+                            style="width: 290px;">
+                        <option value="hit">比中记录</option>
+                        <option value="notHit">未比中记录</option>
+                    </select>
+                </div>
+                <div class="dialog-line">
+                    <a id="conditionSearchSubmit" class="easyui-linkbutton"
+                       iconCls="icon-my_search1" style="width: 94%; text-align: center">检索</a>
+                </div>
+                <div class="dialog-line errorMsg"></div>
+
+            </div>
+            <!-- 1:1 验证-->
+            <div title="人脸验证" data-options="iconCls:'icon-my_1bi1'" style="overflow:auto;padding:10px;">
+                <div id="face-verify-container">
+                    <script type="text/javascript">
+                        function onFaceVerifyLoad ( iframe ) {
+                            var doc = iframe.contentWindow.document;
+                            var text = doc.body.innerText;
+                            if ( text != '' ) {
+                                window.parent.faceVerifyResult ( text );
+                            }
+                        }
+                    </script>
+                    <iframe id="uploadFaceVerifyIframe" name="uploadFaceVerifyIframe" src="about:blank" frameborder="0"
+                            style="display: none;"
+                            onload=" onFaceVerifyLoad(this);"></iframe>
+                    <form action="/ns/peopleBase/getBase64ByFaceVerify" method="post"
+                          enctype="multipart/form-data" id="FaceVerifyForm" target="uploadFaceVerifyIframe">
+                        <!--源图像-->
+                        <div class="face-verify-layout">
+                            <div class="face-verify-img-container">
+                                <div class="face-verify-img-title">源图像 (要求小于1MB)</div>
+                                <div id="imgPriviewBi1">
+                                    <img src="img/facebg.jpg" alt="选择图片上传" id="imgShowBi1">
+                                </div>
+                            </div>
+                            <br>
+                            <a href="#" class="fileUp">
+                                <input type="file" id="uploadFaceVerifyImg1" name="faceImg1">
+                            </a>
+                        </div>
+                        <!--目标图像-->
+                        <div class="face-verify-layout">
+                            <div class="face-verify-img-container">
+                                <div class="face-verify-img-title">目标图像 (要求小于1MB)</div>
+                                <div id="imgPriviewBi2">
+                                    <img src="img/facebg.jpg" alt="选择图片上传" id="imgShowBi2">
+                                </div>
+                            </div>
+                            <br>
+                            <a href="#" class="fileUp">
+                                <input type="file" id="uploadFaceVerifyImg2" name="faceImg2">
+                            </a>
+                        </div>
+                        <!--比对信息-->
+                        <div class="face-verify-layout" style="text-align: left">
+                            <div class="face-verify-info-container">
+                                <div class="face-verify-info-line" style="padding-top:20px;padding-bottom: 20px;">
+                                    <div class="face-verify-info-line-left">
+                                        比对状态：
+                                    </div>
+                                    <div class="face-verify-info-line-right">
+                                        <div class="face-verify-statu">
+                                            <!-- 进度条显示层 -->
+                                            <div class="face-verify-statu-score">
+                                            </div>
+                                            <!-- 分数显示层 -->
+                                            <div class="face-verify-statu-text">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="face-verify-hr">
+                                <div class="face-verify-info-line">
+                                    <div class="face-verify-info-line-left">
+                                        阈&#12288;&#12288;值：
+                                    </div>
+                                    <div class="face-verify-info-line-right">
+                                        <select name="threshold" style="width:100%">
+                                            <option value="0.1">0.1</option>
+                                            <option value="0.2">0.2</option>
+                                            <option value="0.3">0.3</option>
+                                            <option value="0.4">0.4</option>
+                                            <option value="0.5">0.5</option>
+                                            <option value="0.6" selected>0.6</option>
+                                            <option value="0.7">0.7</option>
+                                            <option value="0.8">0.8</option>
+                                            <option value="0.9">0.9</option>
+                                            <option value="1.0">1.0</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="face-verify-info-line">
+                                    <div class="face-verify-info-line-left">
+                                        比&#12288;&#12288;分：
+                                    </div>
+                                    <div class="face-verify-info-line-right" id="face-verify-score">
+
+                                    </div>
+                                </div>
+                                <div class="face-verify-info-line">
+                                    <div class="face-verify-info-line-left">
+                                        比对结果：
+                                    </div>
+                                    <div class="face-verify-info-line-right" id="face-verify-result">
+
+                                    </div>
+                                </div>
+                                <hr class="face-verify-hr">
+                                <br>
+                                <a class="face-verify-submit"></a>
+                                <br>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="face-verify-warn">
+                        <p>图片要求:</p>
+                        <p>1.两眼间距大于40像素</p>
+                        <p>2.脸部光照均匀</p>
+                        <p>3.脸部轮廓清晰完整</p>
+                    </div>
+                </div>
+            </div>
+            <!--mac 搜索-->
+            <div title="MAC检索" data-options="iconCls:'icon-my_wifi'">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div
+                            data-options="region:'north',split:false,iconCls:'icon-my_search1'"
+                            style="height: 80px; overflow: hidden;">
+                        <!--检索条件-->
+                        <table style="width: 100%; height: 100%;" cellpadding="10"
+                               id="infoForm">
+                            <tr>
+                                <td width="3%" align="right">MAC:</td>
+                                <td width="5%"><input class="easyui-validatebox"
+                                                      type="text" name="mac" data-options="required:false"/></td>
+                                <td width="6%" align="right">起始日期:</td>
+                                <td width="5%"><input class="easyui-datetimebox" name="dateFrm" id="dateFrm">
+                                </td>
+                                <td width="6%" align="right">终止日期:</td>
+                                <td width="5%"><input class="easyui-datetimebox" name="dateTo" id="dateTo">
+                                </td>
+                                <td width="5%" align="right">地点:</td>
+                                <td width="5%">
+                                    <select class="easyui-combobox" name="place" id="place" style="width:150px;">
+                                        <option value="1001">高铁站</option>
+                                        <option value="1002">大润发</option>
+                                    </select>
+                                </td>
+                                <td width="9%"><a href="#" class="easyui-linkbutton l-btn"
+                                                  id="searchMac" style="text-align: center"><span
+                                        class="l-btn-text icon-my_search3 l-btn-icon-left">搜索</span></a></td>
+                                <td class="errorMsg" style="text-align: left"></td>
+                            </tr>
+                        </table>
+                        <style>
+                            td {
+                                /*background-color: #00ee00;*/
+
+                            }
+                        </style>
+
+
+                    </div>
+                    <div data-options="region:'center',border:false">
+                        <table id="macTable">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',iconCls:'icon-ok',border:false">
+        <!--右侧-->
+        <!--切换开关-->
+        <div
+                style="height: 38px; position: absolute; top: 0px; left: 0px; z-index: 999; padding-top: 5px; padding-left: 5px;">
+            <a href="#" class="easyui-linkbutton viewToggle"
+               iconCls="icon-arrow_right"
+               style="width: 150px; text-align: center;">视图切换</a>
+        </div>
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'center',border:false">
+                <!--人像列表-->
+                <div class="easyui-tabs" data-options="fit:true" id="viewModel">
+                    <div title="列">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'south'"
+                                 style="height: 31px;">
+                                <!--分页-->
+                                <div id="pagination2" class="easyui-pagination"
+                                     data-options="
+                                        layout:['first','prev','next','last']
+                                        "></div>
+                            </div>
+                            <div data-options="region:'center',border:true"
+                                 id="searchListList" style="overflow-x: hidden;padding-top:10px;padding-left:5px; ">
+                                <!-- style start -->
+                                <!--<div class='cap-main'>-->
+                                <!--<div class='cap-title'>-->
+                                <!--<div class='cap-title-left'>-->
+                                <!--<b>检索人像</b>-->
+                                <!--</div>-->
+                                <!--<div class='cap-title-right'>-->
+                                <!--<b>比中信息</b>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--&lt;!&ndash; style start &ndash;&gt;-->
+                                <!--<div class='cap-content'>-->
+                                <!--&lt;!&ndash;比中信息&ndash;&gt;-->
+                                <!--<div class="cap-content-left">-->
+                                <!--<div class='cap-content-img'>-->
+                                <!--<img src="img/face.jpg" alt="img/face.jpg">-->
+                                <!--<div class='cap-content-img-btitle'>-->
+                                <!--<img src="themes/IconsExtension/01camera-2.png"-->
+                                <!--alt='camera'><span>摄像机测试</span>-->
+                                <!--</div>-->
+                                <!--<div class='cap-zoom'>大图</div>-->
+                                <!--<input type='hidden' name='uuid'>-->
+                                <!--</div>-->
+                                <!--<div class='cap-content-btitle'>2015-00-01 00:00:00</div>-->
+                                <!--</div>-->
+
+                                <!--<div class='cap-content-right'>-->
+                                <!--<div class='cap-content-right-1'>-->
+                                <!--<div class='cap-content-1-1'>-->
+                                <!--<div class='cap-content-img'>-->
+                                <!--<img src='img/face.jpg' alt='img/face.jpg'>-->
+                                <!--</div>-->
+                                <!--<div class='cap-content-btitle'>比分:0.74654</div>-->
+                                <!--</div>-->
+                                <!--<div class='cap-content-1-2'>-->
+                                <!--<div class='cap-content-1-2-content'>-->
+                                <!--<p>姓名：李狗蛋</p>-->
+                                <!--<p class='baike369'></p>-->
+                                <!--<p>所属库：测试人像库</p>-->
+                                <!--<p class='detail-p'><a class="detail-b">详情 〉〉</a></p>-->
+                                <!--<input type='hidden' value='1'>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!--</div>-->
+                                <!-- style end -->
+                                <h1
+                                        style="color:#33CE73; text-align: center; margin-top: 100px;">
+                                    请在左侧输入相关条件检索数据</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div title="图">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'south'"
+                                 style="height: 31px;">
+                                <!--分页-->
+                                <div class="easyui-pagination" id="pagination"
+                                     data-options="
+                                        layout:['first','prev','next','last']
+                                        "></div>
+                            </div>
+                            <div data-options="region:'center',border:true"
+                                 id="searchImgList" style="padding: 10px;">
+
+                                <!--<div class='face-list'><img src='img/face.jpg' alt='face.jpg'>-->
+                                <!--<div class='face-info'>-->
+                                <!--<div class='face-info-child' style="width:100%;">-->
+                                <!--<img src='img/01camera-2.png' alt='face'>-->
+                                <!--<span>摄像机测试</span>-->
+                                <!--</div>-->
+                                <!--<div></div>-->
+                                <!--</div>-->
+                                <!--<div class='face-score'>2015-06-01 00:00:00</div>-->
+                                <!--<div class="cap-zoom">大图</div>-->
+                                <!--<input type='hidden' name='uuid' value='122'>-->
+                                <!--</div>-->
+
+
+                                <h1 style="color: #33CE73; text-align: center; margin-top: 90px;">请在左侧输入相关条件检索数据</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- 大图展示-->
+<div id="big-img" class="easyui-dialog" title="原图展示" style="width:600px;height:700px;"
+     data-options="resizable:false,modal:true">
+    <img src="img/face.jpg" alt="big-img" style="width:100%;height:660px;">
+</div>
+<!-- 大图结束-->
+
+
+<!--dialog 人脸详细信息-->
+<div id="faceDetail" class="easyui-dialog" title="人员信息"
+     style="width: 450px; height: 670px; padding: 10px; font-size: 14px;"
+     data-options="
+				iconCls: 'icon-ok',
+				buttons: '#dlg-buttons'
+			">
+    <div class="dialog-line" style="text-align: center">
+        <img src="img/face.jpg" alt="face.jpg" style="max-width: 50%;">
+    </div>
+    <table style="width: 100%" cellpadding="5" cellspacing="5">
+        <tr>
+            <td width="20%" align="right">姓&#12288;名:</td>
+            <td><input type="text" name="name" readonly style="width: 90%;"/></td>
+        </tr>
+        <tr>
+        <tr>
+            <td align="right">&#12288;身份证:</td>
+            <td><input class="easyui-validatebox" type="text"
+                       name="passport" readonly style="width: 90%;"/></td>
+        </tr>
+         <tr>
+            <td align="right">性&#12288;别:</td>
+            <td><input class="easyui-validatebox" type="text"
+                       name="gender" readonly style="width: 90%;"/></td>
+        </tr>
+        <!-- 所属库-->
+        <tr>
+            <td align="right">所属库:</td>
+            <td><input class="easyui-validatebox" type="text"
+                       name="identityType" readonly style="width: 90%;"/></td>
+        </tr>
+        <tr>
+            <td align="right">籍&#12288;贯:</td>
+            <td><input class="easyui-validatebox" type="text"
+                       name="nation" readonly style="width: 90%;"/></td>
+        </tr>
+        <tr>
+            <td align="right">生&#12288;日:</td>
+            <td><input class="easyui-validatebox" type="text"
+                       name="borned" readonly style="width: 90%;"/></td>
+        </tr>
+        <tr>
+            <td align="right">MAC:</td>
+            <td><input class="easyui-validatebox" type="text" name="mac"
+                       style="width: 90%;" readonly/></td>
+        </tr>
+        <tr>
+            <td align="right">备&#12288;注:</td>
+            <td><input class="easyui-validatebox" type="text" name="comment"
+                       style="width: 90%;" readonly/></td>
+        </tr>
+    </table>
+    <style>
+        td {
+            /*background-color: #00ee00;*/
+
+        }
+    </style>
+</div>
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton"
+       onclick="javascript:$('#faceDetail').dialog('close')">关闭</a>
+</div>
+<!--dialog end 人脸详细信息结束 -->
+</html>
+

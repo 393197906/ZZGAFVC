@@ -1,0 +1,411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css"
+          href="themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/uploadPreview.js"></script>
+    <script type="text/javascript" src="js/faceDataBase/faceDataBase.js"></script>
+    <script type="text/javascript" src="js/highcharts.js"></script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true" id="ly">
+    <div data-options="region:'north'" style="height: 150px;">
+        <div class="nav-bg">
+            <div class="sub-nav"><a href="/ns/software/WebComponents.exe" target="_blank">VLC视频播放插件</a>&#12288;|&#12288;<a href="/ns/software/VideoDetective-Setup.exe" target="_blank">批量注册与视频分析工具</a>&#12288;|&#12288;<a
+                    href="#">帮助文档</a></div>
+            <div class="nav-container">
+                <ul class="nav">
+                    <a href="index.html">
+                        <li>首页</li>
+                    </a>
+                    <a href="monitor.html">
+                        <li>实时监控</li>
+                    </a>
+                    <a href="faceDataBase.html">
+                        <li class="active">人像库管理</li>
+                    </a>
+                    <a href="search.html">
+                        <li>查询检索</li>
+                    </a>
+                    <a href="judge.html">
+                        <li>报警研判</li>
+                    </a>
+                </ul>
+
+                <div class="nav-right">
+                    <span></span> <a href="#" class="logout">注销</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--导航-->
+    <!--人像库列表 左侧-->
+    <div data-options="region:'west',iconCls:'icon-ok',border:true" style="padding-top: 1px;">
+        <div class="easyui-layout" data-options="fit:true" id="west-main">
+            <!--左上-->
+            <div data-options="region:'north',iconCls:'icon-my_facelist',border:false" title="人像库清单">
+                <div class="easyui-panel" style="padding: 5px;" id="tools">
+                    <a href="#" class="easyui-linkbutton" style="float: right"
+                       data-options="plain:true,iconCls:'icon-reload'" id="reloadFd">刷新</a>
+                    <a href="#" class="easyui-linkbutton" style="float: right"
+                       data-options="plain:true,iconCls:'icon-delete'" id="deleteFd">删除</a>
+                    <a href="#" class="easyui-linkbutton" style="float: right"
+                       data-options="plain:true,iconCls:'icon-add'" id="addFd">添加</a>
+                </div>
+                <div class="easyui-panel" style="padding: 5px;"
+                     data-options="fit:true,border:false" id="treec">
+                    <ul class="easyui-tree" id="faceDbtree">
+                    </ul>
+                </div>
+            </div>
+            <!--左下-->
+            <div data-options="region:'center',border:false">
+                <div class="easyui-panel" title="统计信息" id="charts"
+                     style="padding: 5px" data-options="fit:true,iconCls:'icon-my_server_chart',border:false">
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',border:false">
+        <!--右侧-->
+        <div class="easyui-tabs" id="selectTab"
+             data-options="fit:true,tabPosition:'right',headerWidth:100,border:false">
+            <div title="条件查询" data-options="iconCls:'icon-my_search1'">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div
+                            data-options="region:'north',split:false,iconCls:'icon-my_search1'"
+                            title="条件查询"
+                            style="height: 80px; overflow: hidden;">
+                        <!--检索条件-->
+                        <table style="width: 100%; height: 100%;" cellpadding="10"
+                               id="infoForm">
+                            <tr>
+                                <td width="6%" align="right">姓名:</td>
+                                <td width="10%"><input class="easyui-validatebox"
+                                                       type="text" name="name" data-options="required:false"/></td>
+                                <td width="10%" align="right">身份证号:</td>
+                                <td width="10%"><input class="easyui-validatebox"
+                                                       type="text" name="passportNumber" data-options="required:false"/>
+                                </td>
+                                <td width="15%"><a href="#" class="easyui-linkbutton l-btn"
+                                       id="searchFd" style="text-align: center"><span
+                                        class="l-btn-text icon-my_search3 l-btn-icon-left">搜索</span></a></td>
+                                <td class="errorMsg" style="text-align: left;"></td>
+                            </tr>
+                        </table>
+                        <style>
+                            td {
+                                /*background-color: #00ee00;*/
+
+                            }
+                        </style>
+
+                    </div>
+                    <div data-options="region:'center',border:false">
+                        <!--人像列表-->
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'south'"
+                                 style="height: 31px;" id="paginationContainer">
+                                <!--分页-->
+                                <div class="easyui-pagination" id="pagination"></div>
+                            </div>
+                            <div data-options="region:'center'"
+                                 style="padding: 10px;" id="peopleList">
+                                <!--列表-->
+                                <!--<div class='face-list'><img src='img/face.jpg' alt='face.jpg'>-->
+                                <!--<div class='face-info'>-->
+                                <!--<div class='face-info-child face-info-edit'>-->
+                                <!--<img src='img/editFace.png' alt='face'>-->
+                                <!--<span>编辑</span>-->
+                                <!--</div>-->
+                                <!--<div class='face-info-child face-info-name'>-->
+                                <!--<img src='img/faceInfo.png' alt='face'>-->
+                                <!--<span>张三</span>-->
+                                <!--</div>-->
+                                <!--<div></div>-->
+                                <!--</div>-->
+                                <!--<div class='face-close'>×</div>-->
+                                <!--</div>-->
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div title="人像注册" data-options="iconCls:'icon-my_reg'">
+                <div class="easyui-panel" data-options="fit:true,border:false">
+                    <div class="easyui-layout" data-options="fit:true">
+                        <!--记录列表-->
+                        <div data-options="region:'south',border:false"
+                             style="height: 0px;">
+                            <div class="easyui-panel" id="registerInfo"
+                                 data-options="fit:true">
+                                <table class="easyui-datagrid"
+                                       data-options="singleSelect:true,collapsible:true,fit:true">
+                                    <thead>
+                                    <tr>
+                                        <th data-options="field:'name',width:fixWidth(0.25)">姓名</th>
+                                        <th data-options="field:'age',width:fixWidth(0.25)">年龄</th>
+                                        <th
+                                                data-options="field:'nativePlace',width:fixWidth(0.25),align:'right'">籍贯
+                                        </th>
+                                        <th
+                                                data-options="field:'picture',width:fixWidth(0.25),align:'right'">图片
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!--填写注册信息-->
+                        <div data-options="region:'center',border:false">
+                            <div class="easyui-panel" title="人像注册" data-options="fit:true,iconCls:'icon-my_reg'"
+                                 style="padding: 0px;">
+                                <script type="text/javascript">
+                                    function onIFrameLoaded ( iframe ) {
+                                        var doc = iframe.contentWindow.document;
+                                        var text = doc.body.innerText;
+                                        if ( text != '' ) {
+                                            window.parent
+                                                    .loadImgEnrollResult ( text );
+                                        }
+                                    }
+                                </script>
+                                <iframe id="uploadIframe" name="uploadIframe" src="about:blank"
+                                        frameborder="0" style="display: none;"
+                                        onload="onIFrameLoaded(this);"></iframe>
+                                <form action="/ns/peopleBase/getBase64" method="post"
+                                      enctype="multipart/form-data" id="enform" target="uploadIframe">
+                                    <table id="Enrollform" style="width:915px;margin:0 auto; font-size: 14px;"
+                                           cellpadding="5" cellspacing="5">
+                                        <tr>
+                                            <td width="10%"></td>
+                                            <td width="10%"></td>
+                                            <td width="20%"></td>
+                                            <td width="10%"></td>
+                                            <td width="20%"></td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="7">
+                                                <div id="imgPriview">
+                                                    <img src="img/facebg.jpg" alt="选择图片上传" id="imgShow">
+                                                </div>
+                                                <br>
+                                                <div style="text-align: center">
+                                                    <a href="#" class="fileUp">
+                                                        <input type="file" id="uploadImg" name="faceImg">
+                                                    </a>
+                                                </div> <!--</div>-->
+                                            </td>
+                                            <td align="right">姓名:</td>
+                                            <td colspan="3"><input class="easyui-validatebox"
+                                                                   type="text" name="name" data-options="required:true"
+                                                                   style="width: 95%;"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">身份证号:</td>
+                                            <td colspan="3"><input class="easyui-validatebox"
+                                                                   type="text" name="passport"
+                                                                   data-options="required:true"
+                                                                   style="width: 95%;"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">性别:</td>
+                                            <td width="1%"><select name="gender"
+                                                                   style="width: 100%;">
+                                                <option value="男">男</option>
+                                                <option value="女">女</option>
+                                            </select></td>
+                                            <td align="right">所属人口库:</td>
+                                            <td><select class="easyui-combobox" name="type"
+                                                        id="ofFd" style="width:185px;">
+                                            </select></td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">籍贯:</td>
+                                            <td><select name="nation" style="width: 100%;">
+                                                <option value="中国">中国</option>
+                                            </select></td>
+                                            <td align="right">出生日期:</td>
+                                            <td>
+                                                <input class="easyui-datebox" id="borned1" name="borned"
+                                                       data-options="required:true,showSeconds:false,width:'185'"
+                                                       value="1997-01-01"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">Mac:</td>
+                                            <td colspan="3"><input class="easyui-validatebox" type="text" id="mac"
+                                                                   name="mac" style="width:95%;"/></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td align="right">备注:</td>
+                                            <td colspan="3"><input class="easyui-validatebox" type="text" id="comment"
+                                                                   name="comment" style="width:95%;"/></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td align="center" colspan="4"><a href="#"
+                                                                              class="easyui-linkbutton l-btn submitEditPlaceInfo"
+                                                                              id="enrollSubmit"><span
+                                                    class="l-btn-text icon-my_reg l-btn-icon-left">注册</span></a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" style="border-top:1px solid #8db2cf;color:#EE484C">
+                                                <p>图片要求:</p>
+                                                <p>1.两眼间距大于40像素</p>
+                                                <p>2.脸部光照均匀</p>
+                                                <p>3.脸部轮廓清晰完整</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                                <style>
+                                    #Enrollform td {
+                                        /*background-color: #8db2cf;*/
+                                    }
+                                </style>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--批量注册-->
+            <div title="批量注册" data-options="iconCls:'icon-my_facelist'">
+                <h1 style="text-align:center;margin-top:80px;">点击 <a href="/ns/software/VideoDetective-Setup.exe" target="_blank"
+                                                                     style="color:#E2473E;">下载</a> 人像批量注册工具</h1>
+                                                                     
+                <h1 style="text-align:center;">点击 <a href="/ns/software/template.xls" target="_blank"
+                                                                     style="color:#E2473E;">下载</a> 人像批量注册模板</h1>                                                     
+            </div>
+        </div>
+    </div>
+    <!--dialog 编辑人脸信息-->
+    <div id="dlg" class="easyui-dialog" title="编辑人员信息"
+         style="width: 450px; height: 690px; padding: 10px; font-size: 14px;"
+         data-options="
+				iconCls: 'icon-ok',
+				buttons: '#dlg-buttons'
+			">
+        <div class="dialog-line" style="text-align: center">
+            <img src="img/face.jpg" alt=face.jpg
+            "
+            style="max-width: 50%;">
+        </div>
+        <table style="width: 100%" cellpadding="5" cellspacing="5">
+            <tr>
+                <td width="20%" align="right">姓&#12288;名:</td>
+                <td><input type="text" name="name" readonly style="width: 90%;"/></td>
+            </tr>
+            <tr>
+            <tr>
+                <td align="right">&#12288;身份证:</td>
+                <td><input class="easyui-validatebox" type="text" readonly
+                           name="passport" data-options="required:true" style="width: 90%;"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">性&#12288;别:</td>
+                <td><select name="gender" style="width: 91%;" disabled>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td align="right">所属库:</td>
+                <td>
+                    <select class="easyui-combobox" disabled name="type" id="ofFd2"
+                            style="width:280px;">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">籍&#12288;贯:</td>
+                <td><select name="nation" style="width: 91%;" disabled>
+                    <option value="中国">中国</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td align="right">生&#12288;日:</td>
+                <td><input class="easyui-datebox" name="borned" id="borned" disabled
+                           data-options="required:true,showSeconds:false"
+                           style="width:280px;"/></td>
+            </tr>
+            <tr>
+                <td align="right">MAC:</td>
+                <td><input class="easyui-validatebox" type="text" readonly
+                           name="mac" style="width: 90%;"/>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">备&#12288;注:</td>
+                <td><input class="easyui-validatebox" type="text" readonly
+                           name="comment" style="width: 90%;"/>
+                </td>
+            </tr>
+            <!--<tr>-->
+            <!--<td align="center" colspan="4"><a href="#"-->
+            <!--class="easyui-linkbutton submitEditPlaceInfo">保存</a></td>-->
+            <!--</tr>-->
+            <tr>
+                <td align="center" colspan="4" class="errorMsg"></td>
+            </tr>
+        </table>
+        <style>
+            td {
+                /*background-color: #00ee00;*/
+
+            }
+        </style>
+    </div>
+    <div id="dlg-buttons">
+        <a href="javascript:void(0)" class="easyui-linkbutton"
+           onclick="javascript:$('#dlg').dialog('close')">关闭</a>
+    </div>
+    <!--dialog end 编辑人脸信息结束 -->
+</body>
+</html>
+<div id="addDialog" class="easyui-dialog" title="添加新人像库"
+     style="width: 350px; height: 120px;"
+     data-options="iconCls:'icon-save',resizable:true,modal:true
+			"
+     buttons="#dlg-buttonss">
+    <form id="addFacedbForm">
+        <table style="width: 100%;" cellpadding="10">
+            <input type="hidden" name="parentId" value="0"/>
+            <tr>
+                <td align="center" width="70">人像库名称:</td>
+                <td><input class="easyui-validatebox" type="text" style="width:210px;"
+                           name="faceDbName" data-options="required:true" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div id="dlg-buttonss">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok"
+       id="submitAddFd">添加</a> <a href="#" class="easyui-linkbutton"
+                                  iconCls="icon-cancel"
+                                  onclick="javascript:$('#addDialog').dialog('close')">取消</a>
+</div>
+
+

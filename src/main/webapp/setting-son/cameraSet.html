@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css" href="../themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="../themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <script type="text/javascript" src="../js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+<div class="easyui-panel" data-options="fit:true,border:true">
+    <div class="easyui-layout" data-options="fit:true">
+        <!--左-->
+        <div data-options="region:'west',split:false,title:'West',border:false" style="width:500px;">
+            <table cellpadding="10" style="margin: 0 auto;">
+                <tr>
+                    <td colspan="2" align="center" valign="top" width="450" style="height:350px;">
+                        <div class="easyui-panel" title="摄像机管理"
+                             data-options="fit:true,iconCls:'icon-my_camera1',tools:'#tt'">
+                            <ul class="easyui-tree" id="cameraList"
+                                data-options="url:' /ns/camera/cameraList',method:'get',animate:true,lines:true"></ul>
+                        </div>
+                        <div id="tt">
+                            <a href="javascript:void(0)" class="icon-add" id="add"></a>
+                            <a href="javascript:void(0)" class="icon-delete" id="delete"></a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--右-->
+        <div data-options="region:'center',title:'Center',border:false" style="padding:20px;">
+            <!--摄像机修改表单-->
+            <table cellpadding="10" id="cameraInfo">
+                <input class="easyui-textbox" type="hidden" name="cameraId" />  <!--隐藏域 id-->
+                <tr>
+                    <td>摄像机名称:</td>
+                    <td width="300">
+                        <input class="easyui-textbox" type="text" name="cameraName" value='123'/>
+                    </td>
+                    <td>例如:高铁站出口闸机1号</td>
+                </tr>
+                <tr>
+                    <td>摄像机SourceId:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="cameraSourceId" disabled="true" readOnly="true"/>
+                    </td>
+                    <td style="color:red">例如:1001(摄像机的唯一编号)</td>
+                </tr>
+                <tr>
+                    <td>摄像机场所:</td>
+                    <td>
+                        <select class="easyui-combobox" name="cameraPlaceId" id="cameraPlaceId" style="width:300%">
+
+                        </select>
+                    </td>
+                    <td>请选择相应的三级子场所</td>
+                </tr>
+                <tr>
+                    <td>摄像机访问地址:</td>
+                    <td>
+                        <input class="easyui-textbox" name="cameraIPAddress" type="text"/>
+                    </td>
+                    <td>例如:192.168.1.64</td>
+                </tr>
+                <tr>
+                    <td>登陆名:</td>
+                    <td>
+                        <input class="easyui-textbox" name="cameraUser" type="text"/>
+                    </td>
+                    <td>填写登陆名</td>
+                </tr>
+                <tr>
+                    <td>登陆密码:</td>
+                    <td>
+                        <input class="easyui-textbox" name="cameraPassword" type="password"/>
+                    </td>
+                    <td>填写登陆密码</td>
+                </tr>
+
+                <tr>
+                    <td>url:</td>
+                    <td>
+                        <input class="easyui-textbox" name="cameraUrl" type="text"/>
+                    </td>
+                    <td>填写url</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" align="center">
+                        <a href="#" class="easyui-linkbutton submitEditCameraInfo">保存</a>
+                    </td>
+                </tr>
+                <!--错误提示-->
+                <tr>
+                    <td colspan="2" align="center" class="errorMsg">
+
+                    </td>
+                </tr>
+
+            </table>
+            <!--地点修改表单-->
+            <table cellpadding="10" id="placeInfo">
+                <tr>
+                    <td>地点名称:</td>
+                    <td width="300">
+                        <input class="easyui-textbox" type="text" name="placeName" value='123'/>
+                    </td>
+                    <td>例如:高铁站出口闸机</td>
+                </tr>
+                <tr>
+                    <td>地点ID:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="placeId" disabled="true" readOnly="true"/>
+                    </td>
+                    <td style="color:red">例如:1001(地点的唯一编号)</td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <a href="#" class="easyui-linkbutton submitEditPlaceInfo">保存</a>
+                    </td>
+                </tr>
+                <!--错误提示-->
+                <tr>
+                    <td colspan="2" align="center" class="errorMsg">
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<div id="addDialog" class="easyui-dialog" title="添加新节点" style="width:350px;height:500px;"
+     data-options="iconCls:'icon-save',resizable:true,modal:true
+			" buttons="#dlg-buttons">
+    <div id="selectAdd" class="easyui-tabs" data-options="fit:true">
+        <div title="添加新地点" style="overflow:auto;padding:0px;">
+            <form id="addPlace">
+                <table style="width:100%;" cellpadding="10">
+                    <input type="hidden" name="parentId" value="0"/>
+                    <tr>
+                        <td  align="center" width="70">地点名称:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="text" name="placeName"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div title="添加新摄像机" style="overflow:auto;padding:0px;">
+            <form id="addCamera">
+                <table cellpadding="10" style="width:100%;">
+                    <tr>
+                        <td width="90">摄像机名称:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="text" name="cameraName"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="90">SourceId:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="text" name="cameraSourceId"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>摄像机场所:</td>
+                        <td>
+                            <select class="easyui-combobox" name="cameraPlaceId" id="cameraPlaceId2" style="width:198px;">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>摄像机访问地址:</td>
+                        <td>
+                            <input class="easyui-validatebox" name="cameraIPAddress" type="text"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>登陆名:</td>
+                        <td>
+                            <input class="easyui-validatebox" name="cameraUser" type="text"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>登陆密码:</td>
+                        <td>
+                            <input class="easyui-validatebox" name="cameraPassword" type="password"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>url:</td>
+                        <td>
+                            <input class="easyui-validatebox" name="cameraUrl" type="text"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitAdd">添加</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel"
+       onclick="javascript:$('#addDialog').dialog('close')">取消</a>
+</div>
+<style>
+    td {
+        /*background-color: #00ee00;*/
+    }
+
+    td input {
+        width: 100%;
+    }
+</style>
+<script>
+    //刷新
+    function refer(){
+        //初始化摄像机地点select
+        $( "#cameraPlaceId,#cameraPlaceId2" ).combobox ( {
+            url : ' /ns/camera/cameraPlaceList' ,
+            valueField : 'placeId' ,
+            textField : 'placeName'
+        } );
+        $ ( '#cameraList' ).tree ( "reload" );
+    }
+    $ ( function () {
+        var url = " /ns/camera/cameraList";
+        var cif = $ ( "#cameraInfo" );
+        var pif = $ ( "#placeInfo" );
+        refer();
+        //edit
+        $ ( '#cameraList' ).tree ( {
+            //点击获取信息
+            onSelect : function ( node ) {
+                if ( node.text == "设备列表" ) {
+                    return;
+                }
+                //地点节点
+                if ( node.attributes == undefined ) {
+                    cif.hide ();
+                    pif.show ();
+                    $.get ( " /ns/camera/cameraPlaceInfo?id=" + node.id , function ( place , statu ) {
+                        pif.find ( "input[name='placeName']" ).val ( place.placeName ); //设置地点名称
+                        pif.find ( "input[name='placeId']" ).val ( place.placeId ); //设置地点id
+                    } )
+                } else {  //摄像机节点
+                    cif.show ();
+                    pif.hide ();
+                    $.get ( " /ns/camera/cameraInfo?id=" + node.id , function ( camera , statu ) {
+                        cif.find ( "input[name='cameraId']" ).val ( camera.cameraId ); //设置摄像机名称
+                        cif.find ( "input[name='cameraName']" ).val ( camera.cameraName ); //设置摄像机名称
+                        cif.find ( "input[name='cameraSourceId']" ).val ( camera.cameraSourceId ); //设置摄像机sourceId
+                        cif.find ( "input[name='cameraIPAddress']" ).val ( camera.cameraIPAddress ); //设置摄像机ip地址
+                        cif.find ( "input[name='cameraUser']" ).val ( camera.cameraUser ); //设置摄像机登陆用户名
+                        cif.find ( "input[name='cameraPassword']" ).val ( camera.cameraPassword ); //设置摄像机登陆密码
+                        cif.find ( "input[name='cameraUrl']" ).val ( camera.cameraUrl ); //设置url
+                        cif.find ( "#cameraPlaceId" ).combobox ( "setValue" , camera.cameraPlaceId );
+                    } )
+                }
+            } ,
+            //默认加载第一节点
+            onLoadSuccess : function ( node , data ) {
+                $ ( "#cameraList ul li:eq(0)" ).find ( "div" ).addClass ( "tree-node-selected" );   //设置第一个节点高亮
+                var n = $ ( "#cameraList" ).tree ( "getSelected" );
+                if ( n != null ) {
+                    $ ( "#cameraList" ).tree ( "select" , n.target );    //相当于默认点击了一下第一个节点，执行onSelect方法
+                }
+            }
+        } );
+
+        //edit place submit
+        $ ( ".submitEditPlaceInfo" ).click ( function () {
+            var place = {};
+            place.placeId = pif.find ( "input[name='placeId']" ).val ();
+            place.placeName = pif.find ( "input[name='placeName']" ).val ();
+            var msg = vd ( place );
+            if ( msg != 0 ) {  //验证
+                $ ( ".errorMsg" ).text ( msg );
+                return
+            }
+            $.post ( " /ns/camera/editCameraPlace" , {
+                placeId : place.placeId ,
+                placeName : place.placeName,
+                user:getCookie("user")
+            } , function ( data , status ) {
+                if ( data.statu == 'success' ) {
+                    $.messager.alert ( '成功' , data.msg );
+                    refer();
+                }else{
+                    $.messager.alert ( '失败' , data.msg );
+                }
+            } );
+        } );
+        //edit camera submit
+        $ ( ".submitEditCameraInfo" ).click ( function () {
+            var camera = {};
+            camera.cameraId = cif.find ( "input[name='cameraId']" ).val ();
+            camera.cameraName = cif.find ( "input[name='cameraName']" ).val ();
+            camera.cameraSourceId = cif.find ( "input[name='cameraSourceId']" ).val ();
+            camera.cameraPlaceId = cif.find ( "#cameraPlaceId" ).combobox ( "getValue" );
+            camera.cameraIPAddress = cif.find ( "input[name='cameraIPAddress']" ).val ();
+            camera.cameraUser = cif.find ( "input[name='cameraUser']" ).val ();
+            camera.cameraPassword = cif.find ( "input[name='cameraPassword']" ).val ();
+            camera.cameraUrl = cif.find ( "input[name='cameraUrl']" ).val ();
+            var msg = vd ( camera );
+            if ( msg != 0 ) {  //验证
+                $ ( ".errorMsg" ).text ( msg );
+                return
+            }
+            $.post ( " /ns/camera/editCamera" , {
+                cameraId:camera.cameraId,
+                cameraSourceId : camera.cameraSourceId,
+                cameraName : camera.cameraName ,
+                cameraPlaceId : camera.cameraPlaceId ,
+                cameraIPAddress : camera.cameraIPAddress ,
+                cameraUser : camera.cameraUser ,
+                cameraPassword : camera.cameraPassword,
+                cameraUrl : camera.cameraUrl,
+                user:getCookie("user")
+            } , function ( data , status ) {
+                if ( data.statu == 'success' ) {
+                    $.messager.alert ( '成功' , data.msg );
+                    refer();
+                }else{
+                    $.messager.alert ( '失败' , data.msg );
+                }
+            } );
+        } );
+        //add
+        $ ( "#add" ).click ( function () {
+            $ ( '#addDialog' ).dialog ( 'open' );
+        } );
+        $ ( '#selectAdd' ).tabs ( {  //自改高度
+            onSelect : function ( title , index ) {
+                switch ( index ) {
+                    case 0:
+                        $ ( '#addDialog' ).dialog ( {
+                            height : 150
+                        } );
+                        break;
+                    case 1:
+                        $ ( '#addDialog' ).dialog ( {
+                            height : 420
+                        } );
+                        break;
+                }
+            }
+        } );
+        $('#addDialog').dialog('close'); //初始化关闭
+        $ ( "#submitAdd" ).click ( function () {
+            var tab = $ ( '#selectAdd' ).tabs ( 'getSelected' );
+            var index = $ ( '#selectAdd' ).tabs ( 'getTabIndex' , tab );
+            switch ( index ) {
+                case 0:
+                    var place = {};
+                    place.placeName = $ ( "#addPlace" ).find ( "input[name='placeName']" ).val ();
+                    place.parentId = $ ( "#addPlace" ).find ( "input[name='parentId']" ).val ();
+                    var msg = vd ( place );
+                    if ( msg != 0 ) {  //验证
+                             $.messager.alert ( '失败' , msg);
+                        return
+                    }
+                    $.post ( " /ns/camera/addCameraPlace" , {
+                        placeName : place.placeName ,
+                        parentId : place.parentId,
+                        user:getCookie("user")
+                    } , function ( data ) {
+                        if ( data.statu == 'success' ) {
+                            $("#addPlace")[0].reset();
+                            $ ( '#addDialog' ).dialog ( 'close' );
+                            $.messager.alert ( '成功' , data.msg );
+                            refer();
+                        }else{
+                            $.messager.alert ( '失败' , data.msg );
+                        }
+                    } );
+                    break;
+                case 1:
+                    var camera = {};
+                    camera.cameraName = $("#addCamera").find ( "input[name='cameraName']" ).val ();
+                    camera.cameraSourceId = $("#addCamera").find ( "input[name='cameraSourceId']" ).val ();
+                    camera.cameraPlaceId = $("#addCamera").find ( "#cameraPlaceId2" ).combobox ( "getValue" );
+                    camera.cameraIPAddress = $("#addCamera").find ( "input[name='cameraIPAddress']" ).val ();
+                    camera.cameraUser = $("#addCamera").find ( "input[name='cameraUser']" ).val ();
+                    camera.cameraPassword = $("#addCamera").find ( "input[name='cameraPassword']" ).val ();
+                    camera.cameraUrl = $("#addCamera").find ( "input[name='cameraUrl']" ).val ();
+                    var msg = vd ( camera );
+                    if ( msg != 0 ) {  //验证
+                           $.messager.alert ( '失败' , msg);
+                        return
+                    }
+                    $.post ( " /ns/camera/addCamera" , {
+                        cameraName : camera.cameraName ,
+                        cameraSourceId:camera.cameraSourceId,
+                        cameraPlaceId : camera.cameraPlaceId ,
+                        cameraIPAddress : camera.cameraIPAddress ,
+                        cameraUser : camera.cameraUser ,
+                        cameraPassword : camera.cameraPassword,
+                        cameraUrl: camera.cameraUrl,
+                        user:getCookie("user")
+                    } , function ( data ) {
+                        if ( data.statu == 'success' ) {
+                            $("#addCamera")[0].reset();
+                            $ ( '#addDialog' ).dialog ( 'close' );
+                            $.messager.alert ( '成功' , data.msg );
+                            refer();
+                        }else{
+                            $.messager.alert ( '失败' , data.msg );
+                        }
+                    } );
+                    break;
+            }
+        } );
+        //delete
+        $ ( "#delete" ).click ( function () {
+            var node = $ ( '#cameraList' ).tree ("getSelected");
+            if ( node.text == "设备列表" ) {
+                return;
+            }
+            $.messager.confirm('确认','确认要删除'+node.text+'吗？',function(r){
+                if (r){
+                    var id = node.id;
+                    if ( node.attributes == undefined ) {
+                        $.get(" /ns/camera/deleteCameraPlace?id="+id+"&user="+getCookie("user"),function(data){
+                            if(data.statu="success"){
+                                $.messager.alert ( '成功' , data.msg );
+                                refer();
+                            }else if(data.statu="error"){
+                                $.messager.alert ( '失败' , data.msg );
+                            }
+                        })
+                    }else{
+                        $.get(" /ns/camera/deleteCamera?id="+id+"&user="+getCookie("user"),function(data){
+                            if(data.statu="success"){
+                                $.messager.alert ( '成功' , data.msg );
+                                refer();
+                            }else if(data.statu="error"){
+                                $.messager.alert ( '失败' , data.msg );
+                            }
+                        })
+                    }
+                }
+            });
+        } )
+    } )
+</script>

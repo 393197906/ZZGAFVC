@@ -1,0 +1,518 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css" href="../themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="../themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <script type="text/javascript" src="../js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+<div class="easyui-panel" data-options="fit:true,border:true">
+    <div class="easyui-layout" data-options="fit:true">
+        <!--左-->
+        <div data-options="region:'west',split:false,title:'West',border:false" style="width:500px;">
+            <table cellpadding="10" style="margin: 0 auto;">
+                <tr>
+                    <td colspan="2" align="center" valign="top" width="450" style="height:350px;">
+                        <div class="easyui-panel" title="用户管理"
+                             data-options="fit:true,iconCls:'icon-group',tools:'#tt'">
+                            <ul class="easyui-tree" id="userList"
+                                data-options="url:' /ns/user/userList',method:'get',animate:true,lines:true"></ul>
+                        </div>
+                        <div id="tt">
+                            <a href="javascript:void(0)" class="icon-add" id="add"></a>
+                            <a href="javascript:void(0)" class="icon-delete" id="delete"></a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--右-->
+        <div data-options="region:'center',border:false" style="padding:10px;">
+            <!--用户修改表单-->
+            <div class="easyui-tabs" data-options="fit:true" id="user">
+                <div title="用户信息">
+                    <table cellpadding="10" id="userInfo">
+                        <input class="easyui-textbox" type="hidden" name="userId"/>  <!--隐藏域 id-->
+                        <tr>
+                            <td>用户名:</td>
+                            <td width="300">
+                                <input class="easyui-textbox" type="text" name="username" disabled readonly/>
+                            </td>
+                            <td>例如:admin</td>
+                        </tr>
+                        <tr>
+                            <td>密码:</td>
+                            <td>
+                                <input class="easyui-textbox" type="password" name="password" disabled readonly/>
+                            </td>
+                            <td style="color:red"></td>
+                        </tr>
+                        <tr>
+                            <td>所属分组:</td>
+                            <td>
+                                <select class="easyui-combobox" name="ofGroupId" id="ofGroupId" style="width:300%">
+
+                                </select>
+                            </td>
+                            <td>请选择用户所属分组</td>
+                        </tr>
+                        <tr>
+                            <td>用户权限:</td>
+                            <td>
+                                <input class="easyui-textbox" name="permission" type="text" readonly disabled/>
+                            </td>
+                            <td>1-9</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <a href="#" class="easyui-linkbutton submitEditUserInfo">保存</a>
+                            </td>
+                        </tr>
+                        <!--错误提示-->
+                        <tr>
+                            <td colspan="2" align="center" class="errorMsg">
+
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div title="摄像机权限">
+                    <div class="easyui-panel" title="摄像机权限管理"
+                         data-options="fit:true,iconCls:'icon-camera'">
+                        <ul class="easyui-tree" id="selectCamera"></ul>
+                    </div>
+                </div>
+                <div title="人像库权限">
+                    <div class="easyui-panel" title="人像库权限管理"
+                         data-options="fit:true,iconCls:'icon-database'">
+                        <ul class="easyui-tree" id="selectFd"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <table cellpadding="10" id="userGroupInfo">
+                <tr>
+                    <td>分组名称:</td>
+                    <td width="300">
+                        <input class="easyui-textbox" type="text" name="groupName" value='123'/>
+                    </td>
+                    <td>例如:济南市公安局</td>
+                </tr>
+                <tr>
+                    <td>分组ID:</td>
+                    <td>
+                        <input class="easyui-textbox" type="text" name="groupId" disabled="true" readOnly="true"/>
+                    </td>
+                    <td style="color:red">例如:1001(分组的唯一编号)</td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <a href="#" class="easyui-linkbutton submitEditGroupInfo">保存</a>
+                    </td>
+                </tr>
+                <!--错误提示-->
+                <tr>
+                    <td colspan="2" align="center" class="errorMsg">
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<div id="addDialog" class="easyui-dialog" title="添加新节点" style="width:350px;height:500px;"
+     data-options="iconCls:'icon-save',resizable:true,modal:true
+			" buttons="#dlg-buttons">
+    <div id="selectAdd" class="easyui-tabs" data-options="fit:true">
+        <div title="添加新用户分组" style="overflow:auto;padding:0px;">
+            <form id="addGroup">
+                <table style="width:100%;" cellpadding="10">
+                    <input type="hidden" name="parentId" value="0"/>
+                    <tr>
+                        <td align="center" width="70">分组名称:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="text" name="groupName"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div title="添加新用户" style="overflow:auto;padding:0px;">
+            <form id="addUser">
+                <table cellpadding="10" style="width:100%;">
+                    <tr>
+                        <td width="90">用户名称:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="text" name="username"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="90">密码:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="password" name="password"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="90">确认密码:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="password" name="password2"
+                                   data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <td width="90">权限:</td>
+                        <td>
+                            <input class="easyui-validatebox" type="text" name="permission" value="5"
+                                   readonly disabled data-options="required:true"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>所属分组:</td>
+                        <td>
+                            <select class="easyui-combobox" name="ofGroupId" id="ofGroupId2" style="width:205px;">
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" id="submitAdd">添加</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel"
+       onclick="javascript:$('#addDialog').dialog('close')">取消</a>
+</div>
+<style>
+    td {
+        /*background-color: #00ee00;*/
+    }
+
+    td input {
+        width: 100%;
+    }
+</style>
+<script>
+    //刷新
+    function refer () {
+        //初始化用户分组select
+        $ ( "#ofGroupId,#ofGroupId2" ).combobox ( {
+            url : ' /ns/user/userGroupList' ,
+            method : "GET" ,
+            valueField : 'groupId' ,
+            textField : 'groupName'
+        } );
+        $ ( '#userList' ).tree ( "reload" );
+    }
+    $ ( function () {
+        var url = " /ns/user/userList";
+        var cif = $ ( "#userInfo" );
+        var pif = $ ( "#userGroupInfo" );
+
+        $ ( "#user" ).hide ();
+        pif.hide ();
+
+        refer ();
+        //edit
+        $ ( '#userList' ).tree ( {
+            //点击获取信息
+            onSelect : function ( node ) {
+                if ( node.text == "admin" ) {
+                    return;
+                }
+                //地点节点
+                if ( node.attributes == undefined ) {
+                    $ ( "#user" ).hide ();
+                    pif.show ();
+                    $.get ( " /ns/user/userGroupInfo?id=" + node.id , function ( group , statu ) {
+                        pif.find ( "input[name='groupName']" ).val ( group.groupName ); //设置分组名称
+                        pif.find ( "input[name='groupId']" ).val ( group.groupId ); //设置分组id
+                    } )
+                } else {  //用户节点
+                    $ ( "#user" ).show ();
+                    pif.hide ();
+                    //用户信息
+                    $.get ( " /ns/user/userInfo?id=" + node.id , function ( user , statu ) {
+                        cif.find ( "input[name='username']" ).val ( user.username ); //设置用户名称
+                        cif.find ( "input[name='password']" ).val ( user.password ); //设置密码
+                        cif.find ( "input[name='permission']" ).val ( user.permission ); //设置用户权限
+                        cif.find ( "input[name='userId']" ).val ( user.id ); //设置用户权限
+                        cif.find ( "#ofGroupId" ).combobox ( "setValue" , user.ofGroupId );
+                    } )
+                    //用户摄像机权限
+                    var oldArr;
+                    var loading; //阻止加载触发
+                    $ ( "#selectCamera" ).tree ( {
+                        url : " /ns/user/getCamerasPermissionList?id=" + node.id ,
+                        method : 'get' ,
+                        animate : true ,
+                        lines : true ,
+                        checkbox : true ,
+                        onBeforeLoad : function () {
+                            loading = false;
+                        } ,
+                        onLoadSuccess : function () {
+                            loading = true;
+                        } ,
+                        onBeforeCheck : function () {
+                            oldArr = $ ( this ).tree ( "getChecked" );
+                        } ,
+                        onCheck : function () {
+                            if ( !loading ) {
+                                return;
+                            }
+                            var newArr = $ ( this ).tree ( "getChecked" );
+                            var jian = getOld ( oldArr , newArr , "设备列表" , 'cam' );
+                            var jia = getNew ( oldArr , newArr , "设备列表" , 'cam' );
+                            jian.push ( "-1" );
+                            jia.push ( "-1" );
+                            $.post ( " /ns/user/changeCameraToUser" , {
+                                jianArray : jian ,
+                                jiaArray : jia ,
+                                userId : node.id
+                            } , function ( data,status ) {
+                                if ( data.statu == "error" ) {
+//                                    $.messager.alert ( '失败' , data.msg );
+                                }
+                            } )
+
+                        }
+                    } )
+
+                    //用户人像库权限
+                    var loading2; //阻止加载触
+                    var jiu;
+                    $ ( "#selectFd" ).tree ( {
+                        url : " /ns/user/getPeopleBasesPermissionList?user=" + node.text ,
+                        method : 'get' ,
+                        animate : true ,
+                        lines : true ,
+                        checkbox : true ,
+                        onBeforeLoad : function () {
+                            loading2 = false;
+                        } ,
+                        onLoadSuccess : function () {
+                            loading2 = true;
+
+                        } ,
+                        onBeforeCheck : function () {
+                            jiu = $ ( this ).tree ( "getChecked" );
+                        } ,
+                        onCheck : function () {
+                            if ( !loading2 ) {
+                                return;
+                            }
+                            var xin = $ ( this ).tree ( "getChecked" );
+                            var jian = getOld ( jiu , xin , "人像库列表" , 'lib' );
+                            var jia = getNew ( jiu , xin , "人像库列表" , 'lib' );
+                            jian.push ( "-1" );
+                            jia.push ( "-1" );
+                            $.post ( " /ns/user/changeLibraryToUser" , {
+                                jianArray : jian ,
+                                jiaArray : jia ,
+                                userId : node.id ,
+                                currentUser : getCookie ( "user" )
+                            } , function ( data ) {
+                                if ( data.statu == "error" ) {
+//                                    $.messager.alert ( '失败' , data.msg );
+                                }
+                            } )
+                        }
+                    } )
+                }
+            }
+//            ,
+//            //默认加载第一节点
+//            onLoadSuccess : function ( node , data ) {
+//                $ ( "#userList ul li:eq(1)" ).find ( "div" ).addClass ( "tree-node-selected" );   //设置第一个节点高亮
+//                var n = $ ( "#userList" ).tree ( "getSelected" );
+//                if ( n != null ) {
+//                    $ ( "#userList" ).tree ( "select" , n.target );    //相当于默认点击了一下第一个节点，执行onSelect方法
+//                }
+//            }
+        } )
+
+        //edit group submit
+        $ ( ".submitEditGroupInfo" ).click ( function () {
+            var group = {};
+            group.groupId = pif.find ( "input[name='groupId']" ).val ();
+            group.groupName = pif.find ( "input[name='groupName']" ).val ();
+            var msg = vd ( group );
+            if ( msg != 0 ) {  //验证
+                $ ( ".errorMsg" ).text ( msg );
+                return
+            }
+            $.post ( " /ns/user/editUserGroup" , {
+                groupId : group.groupId ,
+                groupName : group.groupName ,
+                user : getCookie ( "user" )
+            } , function ( data , status ) {
+                if ( data.statu == 'success' ) {
+                    $.messager.alert ( '成功' , data.msg );
+                    refer ();
+                } else {
+                    $.messager.alert ( '失败' , data.msg );
+                }
+            } );
+        } );
+        //edit user submit
+        $ ( ".submitEditUserInfo" ).click ( function () {
+            var user = {};
+            user.userId = cif.find ( "input[name='userId']" ).val ();
+            user.rootUsername = cif.find ( "input[name='username']" ).val ();
+            user.rootPassword = cif.find ( "input[name='password']" ).val ();
+            user.ofGroupId = cif.find ( "#ofGroupId" ).combobox ( "getValue" );
+            user.permission = cif.find ( "input[name='permission']" ).val ();
+            var msg = vd ( user );
+            if ( msg != 0 ) {  //验证
+                $ ( ".errorMsg" ).text ( msg );
+                return
+            }
+            $.post ( " /ns/user/editUser" , {
+                id : user.userId ,
+                username : user.rootUsername ,
+                password : user.rootPassword ,
+                ofGroupId : user.ofGroupId ,
+                permission : user.permission ,
+                user : getCookie ( "user" )
+            } , function ( data , status ) {
+                if ( data.statu == 'success' ) {
+                    $.messager.alert ( '成功' , data.msg );
+                    refer ();
+                } else {
+                    $.messager.alert ( '失败' , data.msg );
+                }
+            } );
+        } );
+        //add
+        $ ( "#add" ).click ( function () {
+            $ ( '#addDialog' ).dialog ( 'open' );
+        } )
+        $ ( '#selectAdd' ).tabs ( {  //自改高度
+            onSelect : function ( title , index ) {
+                switch ( index ) {
+                    case 0:
+                        $ ( '#addDialog' ).dialog ( {
+                            height : 150
+                        } )
+                        break;
+                    case 1:
+                        $ ( '#addDialog' ).dialog ( {
+                            height : 330
+                        } )
+                        break;
+                }
+            }
+        } );
+        $ ( '#addDialog' ).dialog ( 'close' ); //初始化关闭
+        $ ( "#submitAdd" ).click ( function () {
+            var tab = $ ( '#selectAdd' ).tabs ( 'getSelected' );
+            var index = $ ( '#selectAdd' ).tabs ( 'getTabIndex' , tab );
+            switch ( index ) {
+                case 0:
+                    var group = {};
+                    group.groupName = $ ( "#addGroup" ).find ( "input[name='groupName']" ).val ();
+                    group.parentId = $ ( "#addGroup" ).find ( "input[name='parentId']" ).val ();
+                    var msg = vd ( group );
+                    if ( msg != 0 ) {  //验证
+                        $.messager.alert ( '失败' , msg );
+                        return
+                    }
+                    $.post ( " /ns/user/addUserGroup" , {
+                        groupName : group.groupName ,
+                        parentId : group.parentId ,
+                        user : getCookie ( "user" )
+                    } , function ( data ) {
+                        if ( data.statu == 'success' ) {
+                            $ ( "#addGroup" )[ 0 ].reset ();
+                            $ ( '#addDialog' ).dialog ( 'close' );
+                            $.messager.alert ( '成功' , data.msg );
+                            refer ();
+                        } else {
+                            $.messager.alert ( '失败' , data.msg );
+                        }
+                    } );
+                    break;
+                case 1:
+                    var user = {};
+                    user.rootUsername = $ ( "#addUser" ).find ( "input[name='username']" ).val ();
+                    user.rootPassword = $ ( "#addUser" ).find ( "input[name='password']" ).val ();
+                    user.rootPassword2 = $ ( "#addUser" ).find ( "input[name='password2']" ).val ();
+                    user.permission = $ ( "#addUser" ).find ( "input[name='permission']" ).val (); //权限
+                    user.ofGroupId = $ ( "#addUser" ).find ( "#ofGroupId2" ).combobox ( "getValue" );
+                    var msg = vd ( user );
+                    if ( msg != 0 ) {  //验证
+                        $.messager.alert ( '失败' , msg );
+                        return
+                    }
+                    $.post ( " /ns/user/addUser" , {
+                        username : user.rootUsername ,
+                        password : user.rootPassword2 ,
+                        permission : user.permission ,
+                        ofGroupId : user.ofGroupId ,
+                        user : getCookie ( "user" )
+                    } , function ( data ) {
+                        if ( data.statu == 'success' ) {
+                            $ ( "#addUser" )[ 0 ].reset ();
+                            $ ( '#addDialog' ).dialog ( 'close' );
+                            $.messager.alert ( '成功' , data.msg );
+                            refer ();
+                        } else {
+                            $.messager.alert ( '失败' , data.msg );
+                        }
+                    } );
+                    break;
+            }
+        } )
+        //delete
+        $ ( "#delete" ).click ( function () {
+            var node = $ ( '#userList' ).tree ( "getSelected" );
+            if ( node.text == "admin" ) {
+                return;
+            }
+            $.messager.confirm ( '确认' , '确认要删除' + node.text + '吗？' , function ( r ) {
+                if ( r ) {
+                    var id = node.id;
+                    if ( node.attributes == undefined ) {
+                        $.get ( " /ns/user/deleteUserGroup?id=" + id + "&user=" + getCookie ( "user" ) , function ( data ) {
+                            if ( data.statu = "success" ) {
+                                $.messager.alert ( '成功' , data.msg );
+                                refer ();
+                            } else if ( data.statu = "error" ) {
+                                $.messager.alert ( '失败' , data.msg );
+                            }
+                        } )
+                    } else {
+                        $.get ( " /ns/user/deleteUser?id=" + id + "&user=" + getCookie ( "user" ) , function ( data ) {
+                            if ( data.statu = "success" ) {
+                                $.messager.alert ( '成功' , data.msg );
+                                refer ();
+                            } else if ( data.statu = "error" ) {
+                                $.messager.alert ( '失败' , data.msg );
+                            }
+
+                        } )
+                    }
+                }
+            } );
+        } )
+    } )
+</script>

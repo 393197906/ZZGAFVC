@@ -1,0 +1,505 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统-实时监控</title>
+    <link rel="stylesheet" type="text/css"
+          href="themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+        -->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">
+        -->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">
+        -->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">
+        -->
+
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/json2.js"></script>
+    <script type="text/javascript" src="js/2.js"></script>
+    <script type="text/javascript" src="js/socket.js"></script>
+    <script type="text/javascript" src="js/vlc/VLCobject.js"></script>
+    <script type="text/javascript" src="js/monitor/monitor.js"></script>
+    <script type="text/javascript" src="js/highcharts.js"></script>
+    <script type="text/javascript" src="js/HK/webVideoCtrl.js"></script>
+    <script type="text/javascript" src="js/HK/demo.js"></script>
+    <style>
+        .panel-tool {
+            overflow: visible;
+        }
+    </style>
+</head>
+<body>
+<div id="aSound" style="display: none"></div>
+<div class="easyui-layout" data-options="fit:true" id="ly">
+    <div data-options="region:'north'"
+         style="height: 150px; overflow:hidden;">
+        <div class="nav-bg">
+            <div class="sub-nav">
+                <a href="/ns/software/WebComponents.exe" target="_blank">VLC视频播放插件</a>&#12288;|&#12288;<a
+                    href="/ns/software/VideoDetective-Setup.exe" target="_blank">批量注册与视频分析工具</a>&#12288;|&#12288;<a
+                    href="#">帮助文档</a>
+            </div>
+            <div class="nav-container">
+                <ul class="nav">
+                    <a href="index.html">
+                        <li>首页</li>
+                    </a>
+                    <a href="monitor.html">
+                        <li class="active">实时监控</li>
+                    </a>
+                    <a href="faceDataBase.html">
+                        <li>人像库管理</li>
+                    </a>
+                    <a href="search.html">
+                        <li>查询检索</li>
+                    </a>
+                    <a href="judge.html">
+                        <li>报警研判</li>
+                    </a>
+                </ul>
+
+                <div class="nav-right">
+                    <span></span> <a href="#" class="logout">注销</a>
+                </div>
+            </div>
+        </div>
+        <!--flash 隐藏-->
+        <div id="flashcontainer" style="width: 0px; height: 0px;"></div>
+    </div>
+    <!--导航-->
+
+    <!--右侧-->
+    <div data-options="region:'east',split:false">
+        <div class="easyui-layout" data-options="fit:true" id="east-ly">
+            <!--右上-->
+            <div data-options="region:'north',border:false" id="faceDetail">
+                <div class="easyui-panel" title="详情"
+                     data-options="iconCls:'icon-my_detail',fit:true,border:false"
+                     style="padding-top: 10px;">
+                    <div class="dialog-line" style="text-align: center">
+                        <img alt="人员照片" style="max-width: 50%;">
+                    </div>
+                    <table style="width: 100%" cellpadding="5" cellspacing="5">
+                        <tr>
+                            <td width="20%" align="right">姓&#12288;名:</td>
+                            <td><input type="text" name="name" readonly
+                                       style="width: 90%;"/></td>
+                        </tr>
+                        <tr>
+                        <tr>
+                            <td align="right">证&#12288;件:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="passport" readonly style="width: 90%;"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right">性&#12288;别:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="gender" readonly style="width: 90%;"/></td>
+                        </tr>
+                        <!-- 所属库-->
+                        <tr>
+                            <td align="right">所属库:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="type" readonly style="width: 90%;"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right">籍&#12288;贯:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="nation" readonly style="width: 90%;"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right">生&#12288;日:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="bornedDate" readonly style="width: 90%;"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right">MAC:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="mac" readonly style="width: 90%;"/></td>
+                        </tr>
+                        <tr>
+                            <td align="right">备&#12288;注:</td>
+                            <td><input class="easyui-validatebox" type="text"
+                                       name="comment" style="width: 90%;" readonly/></td>
+                        </tr>
+                        <tr>
+                            <td align="center" colspan="4" class="errorMsg"></td>
+                        </tr>
+                    </table>
+                    <style>
+                        td {
+                            /*background-color: #00ee00;*/
+
+                        }
+                    </style>
+                </div>
+            </div>
+            <!-- 大图展示-->
+            <div id="big-img" class="easyui-dialog" title="原图展示"
+                 style="width: 600px; height: 700px; z-index: 999"
+                 data-options="resizable:false,modal:true">
+                <img src="img/face.jpg" alt="big-img"
+                     style="width: 100%; height: 660px;">
+            </div>
+            <!-- 大图结束-->
+
+            <!--右下 (抓拍记录)-->
+            <div data-options="region:'center',border:false">
+                <div class="easyui-panel" title="抓拍记录" style="padding: 5px"
+                     data-options="fit:true,iconCls:'icon-my_capture2',border:false,tools:'#tt'">
+
+                    <!-- 摄像机选择 -->
+
+                    <div class="capturedFaces">
+
+                        <!--<div class="capturedFaces-img">-->
+                        <!--<div class="capturedFaces-img-container">-->
+                        <!--<img src="http://localhost/new/image/55.jpg" alt="55.jpg">-->
+                        <!--<div class="cap-content-img-btitle">-->
+                        <!--<img src="themes/IconsExtension/01camera-2.png"-->
+                        <!--alt='camera'><span>摄像机测试</span>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--<p>2015-12-13 15:25:32</p>-->
+                        <!--<div class="capturedFaces-zoom">大图</div>-->
+                        <!--<input type="hidden" name="uuid">-->
+                        <!--</div>-->
+
+                    </div>
+                </div>
+                <div id="tt">
+                    <select class="easyui-combotree" id="sourceId" style="width:230px;"></select>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--左侧-->
+    <div
+            data-options="region:'west',split:false,iconCls:'icon-ok',border:false">
+        <div class="easyui-layout" data-options="fit:true" id="west-ly">
+            <!--左上-->
+            <div
+                    data-options="region:'north',iconCls:'icon-my_camera1',border:false"
+                    title="设备清单">
+                <!--<div class="easyui-panel" style="padding:5px;" id="tools">-->
+                <!--<a href="#" class="easyui-linkbutton" style="float: right"-->
+                <!--data-options="plain:true,iconCls:'icon-cancel'">取消</a>-->
+                <!--<a href="#" class="easyui-linkbutton" style="float: right"-->
+                <!--data-options="plain:true,iconCls:'icon-reload'">刷新</a>-->
+                <!--<a href="#" class="easyui-linkbutton" style="float: right"-->
+                <!--data-options="plain:true,iconCls:'icon-search'">搜索</a>-->
+                <!--</div>-->
+                <div class="easyui-panel" style="padding: 5px"
+                     data-options="fit:true" id="treec">
+                    <ul class="easyui-tree" id="cameralist"
+                        data-options="method:'get',animate:false,lines:true"></ul>
+                </div>
+            </div>
+            <!--左下-->
+            <div data-options="region:'center',border:false">
+                <div class="easyui-tabs" data-options="fit:true,border:false"
+                     id="stat">
+                    <div title="报警统计" data-options="iconCls:'icon-my_alert'" id="hitB">
+                    </div>
+                    <div title="抓拍统计" data-options="iconCls:'icon-my_capture2'"
+                         id="notHitB"></div>
+                </div>
+                <script>
+                    $ ( function () {
+                        $ ( "#stat" )
+                                .tabs (
+                                        {
+                                            onSelect : function (
+                                                    title ,
+                                                    index ) {
+                                                switch ( index ) {
+                                                    case 0:
+                                                        var url = " /ns/camera/getThreeDayAlertTotal?user="
+                                                                + getCookie ( "user" );
+                                                        var dom = $ ( "#hitB" );
+                                                        break;
+                                                    case 1:
+                                                        var url = " /ns/camera/getThreeDayCaptureTotal?user="
+                                                                + getCookie ( "user" );
+                                                        var dom = $ ( "#notHitB" );
+                                                        break;
+                                                }
+
+                                                $
+                                                        .get (
+                                                                url ,
+                                                                function (
+                                                                        data ) {
+                                                                    var arr = getTJson ( data );
+                                                                    dom
+                                                                            .highcharts ( {
+                                                                                credits : {
+                                                                                    enabled : false
+                                                                                    // 禁用版权信息
+                                                                                } ,
+                                                                                title : {
+                                                                                    text : null ,
+                                                                                    x : -20
+                                                                                    //center
+                                                                                } ,
+                                                                                subtitle : {
+                                                                                    text : null ,
+                                                                                    x : -20
+                                                                                } ,
+                                                                                xAxis : {
+                                                                                    categories : [
+                                                                                        '前天' ,
+                                                                                        '昨天' ,
+                                                                                        '今天' ]
+                                                                                } ,
+                                                                                yAxis : {
+                                                                                    title : {
+                                                                                        text : null
+                                                                                    }
+                                                                                } ,
+                                                                                tooltip : {
+                                                                                    valueSuffix : '条'
+                                                                                } ,
+                                                                                /*   legend: {
+                                                                                 layout: 'vertical',
+                                                                                 align: 'center',
+                                                                                 verticalAlign: 'middle',
+                                                                                 borderWidth: 0
+                                                                                 }, */
+                                                                                series : arr
+                                                                            } );
+                                                                } )
+
+                                            }
+                                        } )
+                    } )
+                </script>
+            </div>
+        </div>
+    </div>
+    <!--中间-->
+    <div data-options="region:'center',border:false">
+        <div class="easyui-layout" data-options="fit:true" id="center-ly">
+            <!--中上-->
+            <div data-options="region:'north',iconCls:'icon-my_camera2',border:false"
+                 title="实时监控" style="height: 450px;">
+                <!--视频预览容器-->
+                <div class="easyui-panel" id="divPlugin"
+                     data-options="fit:true,border:false"
+                     style="background-image: url('img/playbg2.jpg'); background-position: center; overflow: hidden;"></div>
+            </div>
+            <!--中下-->
+            <div data-options="region:'center',border:false">
+                <div class="easyui-panel" title="报警信息" style="padding-top: 0px;"
+                     data-options="fit:true,iconCls:'icon-my_alert'">
+                    <!--报警动画-->
+                    <!--left-->
+                    <div
+                            class="alert-animate alert-animate-height alert-animate-height-left"></div>
+                    <!--right-->
+                    <div
+                            class="alert-animate alert-animate-height alert-animate-height-right"></div>
+                    <!--top-->
+                    <div
+                            class="alert-animate alert-animate-width alert-animate-width-top"></div>
+                    <!--bottom-->
+                    <div
+                            class="alert-animate alert-animate-width alert-animate-width-bottom"></div>
+                    <!--报警内容-->
+                    <div class='cap-main'>
+                        <div class='cap-title'>
+                            <div class='cap-title-left'>
+                                <b>报警信息</b>
+                            </div>
+                            <div class='cap-title-right'>
+                                <b>比中信息</b>
+                            </div>
+                        </div>
+                        <div class="hitFaces">
+
+                            <!--<div class='cap-content'>-->
+                            <!--&lt;!&ndash;比中信息&ndash;&gt;-->
+                            <!--<div class="cap-content-left">-->
+                            <!--<div class='cap-content-img'>-->
+                            <!--<img src="img/face.jpg" alt="img/face.jpg">-->
+                            <!--<div class='cap-content-img-btitle'>-->
+                            <!--<img src="themes/IconsExtension/01camera-2.png"-->
+                            <!--alt='camera'><span>摄像机测试</span>-->
+                            <!--</div>-->
+                            <!--<div class='cap-label cap-zoom'>大图</div>-->
+                            <!--<input type='hidden' name='uuid'>-->
+                            <!--<div class='cap-label cap-judge'>研判</div>-->
+                            <!--<input type='hidden' name='id'>-->
+                            <!--</div>-->
+                            <!--<div class='cap-content-btitle'>2015-00-01 00:00:00</div>-->
+                            <!--</div>-->
+
+                            <!--<div class='cap-content-right'>-->
+                            <!--<div class='cap-content-right-1'>-->
+                            <!--<div class='cap-content-1-1'>-->
+                            <!--<div class='cap-content-img'>-->
+                            <!--<img src='img/face.jpg' alt='img/face.jpg'>-->
+                            <!--</div>-->
+                            <!--<div class='cap-content-btitle'>比分:0.74654</div>-->
+                            <!--</div>-->
+                            <!--<div class='cap-content-1-2'>-->
+                            <!--<div class='cap-content-1-2-content'>-->
+                            <!--<p>姓名：李狗蛋</p>-->
+                            <!--<p class='baike369'></p>-->
+                            <!--<p>所属库：测试人像库</p>-->
+                            <!--<div>可信度等级：高</div>-->
+                            <!--<div class="hit-level-container">-->
+                            <!--<div class="hit-level-cell hit-level-1"></div>-->
+                            <!--<div class="hit-level-cell hit-level-2"></div>-->
+                            <!--<div class="hit-level-cell hit-level-3"></div>-->
+                            <!--<div class="hit-level-cell hit-level-4"></div>-->
+                            <!--</div>-->
+                            <!--<p class='detail-p'><a class="detail-b">详细〉〉</a></p>-->
+                            <!--<input type='hidden' value='1'>-->
+                            <!--</div>-->
+
+                            <!--</div>-->
+                            <!--</div>-->
+
+                            <!--</div>-->
+                            <!--</div>-->
+
+                        </div>
+                    </div>
+                    <!-- style end -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $ ( function () {
+        //$ ( "#center-ly" ).layout ( "collapse" , "north" );
+        //vlc 高宽自适应
+       /*  var vwidth = $ ( "#vlcc" ).width ();
+        var vheight = $ ( "#vlcc" ).height ();
+        myvlc = new VLCObject ( "test" , vwidth , vheight );
+        myvlc.addParam ( "volume" , "50" );
+        myvlc.addParam ( "autoplay" , "true" );
+        myvlc.addParam ( "loop" , "false" );
+        myvlc.addParam ( "fullscreen" , "false" );
+        myvlc.addParam ( "toolbar" , "false" ); */
+        $ ( '#cameralist' ).tree (
+                {
+                    url : " /ns/camera/cameraListByUserMonitor?username="
+                    + getCookie ( "user" ) ,
+                    onSelect : function ( node ) {
+                        var tree = $ ( this ).tree;
+                        //选中的节点是否为叶子节点,如果不是叶子节点,清除选中
+                        var isLeaf = tree ( 'isLeaf' , node.target );
+                        if ( !isLeaf ) {
+                            //$ ( "#center-ly" ).layout ( "collapse" , "north" );
+                            return;
+                        }
+             //           $ ( "#center-ly" ).layout ( "expand" , "north" );
+//                        var value = node.attributes.url;
+//                        myvlc.addParam ( "mrl" , value );
+//                        myvlc.write ( "vlcc" );
+   						//$ ( "#center-ly" ).layout ( "expand" , "north" );
+                       	  loginStart ( {
+                            ip : node.attributes.ip ,
+                            user : node.attributes.user ,
+                            password : node.attributes.password ,
+                            streamType : 2   //1 主码流 2 子码流
+                        } ); 
+
+                    } ,
+                    //默认加载第一摄像机
+                    onLoadSuccess : function ( node , data ) {
+                        /*  $ ( "#cameralist ul li:eq(1)" ).find ( "div" ).addClass ( "tree-node-selected" );   //设置第一个节点高亮
+                         var n = $ ( "#cameralist" ).tree ( "getSelected" );
+                         if ( n != null ) {
+                         $ ( "#cameralist" ).tree ( "select" , n.target );    //相当于默认点击了一下第一个节点，执行onSelect方法
+                         } */
+                        var cc = getCookie ( "cameraCookie" ); //取跳转cookie
+                        if ( cc != null ) {
+                            var node = treeGetDiNodeById ( "cameralist" , cc ) //根据id
+                            $ ( '#cameralist' ).tree ( "select" , node.target ); //选择节点
+                            $ ( "#center-ly" ).layout ( "expand" , "north" );
+                            delCookie ( "cameraCookie" );//清除cookie
+                        }
+                    }
+                } )
+    } );
+
+    //     仅适用于IE浏览器是，并且安装有vlc插件，则返回true；
+    function isInsalledIEVLC () {
+        var vlcObj = null;
+        var vlcInstalled = false;
+        try {
+            vlcObj = new ActiveXObject ( "VideoLAN.Vlcplugin.1" );
+            if ( vlcObj != null ) {
+                vlcInstalled = true
+            }
+        } catch ( e ) {
+            vlcInstalled = false;
+        }
+        return vlcInstalled;
+    }
+
+    //仅适用于firefox浏览器是，并且安装有vlc插件，则返回true；
+    function isInsalledFFVLC () {
+        var numPlugins = navigator.plugins.length;
+        for ( i = 0 ; i < numPlugins ; i++ ) {
+            plugin = navigator.plugins[ i ];
+            if ( plugin.name.indexOf ( "VideoLAN" ) > -1
+                    || plugin.name.indexOf ( "VLC" ) > -1 ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* 浏览器检测 */
+    function checkBrowser () {
+        var browser = navigator.appName;
+        var b_version = navigator.appVersion;
+        var version = parseFloat ( b_version );
+
+        alert ( browser );
+        if ( browser == "Netscape" && version >= 4 ) {
+            if ( !isInsalledFFVLC () ) {
+                $.messager
+                        .confirm (
+                                '提示' ,
+                                '您的系统还未安装视频播放插件，是否安装？' ,
+                                function ( r ) {
+                                    if ( r ) {
+                                        location.href = "/ns/software/vlc_2.2.3.0.exe";
+                                    }
+                                } );
+
+            }
+        } else if ( browser == "Microsoft Internet Explorer" && version >= 4 ) {
+            if ( !isInsalledIEVLC () ) {
+                $.messager
+                        .confirm (
+                                '提示' ,
+                                '您的系统还未安装视频播放插件，是否安装？' ,
+                                function ( r ) {
+                                    if ( r ) {
+                                        location.href = "/ns/software/vlc_2.2.3.0.exe";
+                                    }
+                                } );
+            }
+        }
+    }
+
+    //        checkBrowser();
+</script>
+</body>
+</html>

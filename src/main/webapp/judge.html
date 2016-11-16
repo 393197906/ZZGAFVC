@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css" href="themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/judge.js"></script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true">
+    <div data-options="region:'north'" style="height:150px;">
+        <div class="nav-bg">
+            <div class="sub-nav"><a href="/ns/software/WebComponents.exe" target="_blank">VLC视频播放插件</a>&#12288;|&#12288;<a href="/ns/software/VideoDetective-Setup.exe" target="_blank">批量注册与视频分析工具</a>&#12288;|&#12288;<a
+                    href="#">帮助文档</a></div>
+            <div class="nav-container">
+                <ul class="nav">
+                    <a href="index.html">
+                        <li>首页</li>
+                    </a>
+                    <a href="monitor.html">
+                        <li>实时监控</li>
+                    </a>
+                    <a href="faceDataBase.html">
+                        <li>人像库管理</li>
+                    </a>
+                    <a href="search.html">
+                        <li>查询检索</li>
+                    </a>
+                    <a href="judge.html">
+                        <li class="active">报警研判</li>
+                    </a>
+                </ul>
+
+                <div class="nav-right">
+                    <span></span> <a href="#" class="logout">注销</a>
+                </div>
+            </div>
+        </div>
+    </div> <!--导航-->
+    <!-- 左侧-->
+    <div data-options="region:'west',split:false,iconCls:'icon-ok',border:false" style="width:245px;">
+        <div class="easyui-panel" id="conditionSearch" data-options="fit:true,border:false,iconCls:'icon-my_search1'" title="条件检索" style="padding:5px;">
+            <div class="dialog-line">
+                <div class="dialog-line-label" style="padding-bottom: 5px;">起始日期(时间):</div>
+                <input class="easyui-datebox" name="dtFrom" style="width: 131px;"/>
+                <input class="easyui-timespinner" name="dtFromTime" style="width: 91px;" value="00:00:00"
+                       data-options="showSeconds:true"/>
+            </div>
+            <div class="dialog-line">
+                <div class="dialog-line-label" style="padding-bottom: 5px;">终止日期(时间):</div>
+                <input class="easyui-datebox " name="dtTo" style="width: 131px;"/>
+                <input class="easyui-timespinner" name="dtToTime" style="width:91px;" value="23:59:59"
+                       data-options="showSeconds:true"/>
+            </div>
+            <div class="dialog-line">
+                <div class="dialog-line-label" style="padding-bottom: 5px;">摄像头:</div>
+                <select class="easyui-combotree" id="strSourceId"
+                        style="width: 230px;"></select>
+            </div>
+            <div class="dialog-line">
+                <div class="dialog-line-label" style="padding-bottom: 5px;">人员姓名:</div>
+                <input class="easyui-validatebox" name="username"
+                       data-options="required:false" style="width: 227px;"/>
+            </div>
+            <div class="dialog-line">
+                <a id="conditionSearchSubmit" class="easyui-linkbutton"
+                   iconCls="icon-my_search1" style="width: 90%; text-align: center">检索</a>
+            </div>
+            <div class="dialog-line errorMsg"></div>
+        </div>
+
+    </div>
+    <div data-options="region:'center',border:false">   <!--右侧-->
+        <div class="easyui-layout" data-options="fit:true" id="right">
+            <!--报警研判列表-->
+            <div data-options="region:'center',split:false,border:false">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div data-options="region:'south'"
+                         style="height: 31px;" id="paginationContainer">
+                        <!--分页-->
+                        <div class="easyui-pagination" id="pagination"></div>
+                    </div>
+                    <div data-options="region:'center',border:true">
+                        <div class="easyui-panel" title="报警信息列表"
+                             data-options="fit:true,iconCls:'icon-application_view_list',border:false"
+                             style="padding: 0;overflow: hidden">
+                            <h1 style="color:#33CE73; text-align: center; margin-top: 100px;display:block">
+                                请在左侧输入相关条件检索数据</h1>
+                            <div class="judge-list-continer" style="display:none;">
+                                <div class="judge-list-line"></div>
+                                <div class="judge-list-title">
+                                    <div class="judge-list-title-left">
+                                        报警信息
+                                    </div>
+                                    <div class="judge-list-title-right">
+                                        <div class="showResponse">
+                                            <input type="hidden">
+                                            <div class="showResponse-img">
+                                                <span>查看研判流程</span>
+                                            </div>
+                                            <div></div>
+                                        </div>
+                                        比中信息
+                                    </div>
+                                </div>
+                                <div class="judge-list-left">
+
+                                    <!--左列表模板-->
+                                     <!--<div class="judge-list-info">-->
+                                        <!--<div class="judge-list-info-img">-->
+                                            <!--<img src="img/face.jpg" alt="">-->
+                                        <!--</div>-->
+                                        <!--<div class="judge-list-info-content">-->
+                                            <!--<div>-->
+                                                <!--<h4>摄像机测试1</h4>-->
+                                                <!--<div class="baike369"></div>-->
+                                                <!--<p>2015-07-01 10:10:10</p>-->
+                                                <!--<br/>-->
+                                            <!--</div>-->
+                                            <!--<div  id='arrow'></div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="baike369"></div>-->
+                                    <!--左列表模板结束-->
+
+                                </div>
+                                <div class="judge-list-right">
+
+                                    <!--右列表模板-->
+                                    <!--<div class="judge-list-info">-->
+                                    <!--<div class="judge-list-info-img">-->
+                                    <!--<img src="img/face.jpg" alt="face">-->
+                                    <!--</div>-->
+                                    <!--<div class="judge-list-info-content">-->
+                                    <!--<div>-->
+                                    <!--<p>姓名：张三</p>-->
+                                    <!--<div class="baike369"></div>-->
+                                    <!--<p>性别：男</p>-->
+                                    <!--<div class="baike369"></div>-->
+                                    <!--<p>籍贯：中国</p>-->
+                                    <!--<div class="baike369"></div>-->
+                                    <!--<p>证件：372924199009091911</p>-->
+                                    <!--<div class="baike369"></div>-->
+                                    <!--<p>生日：1990-09-09</p>-->
+                                    <!--<div class="baike369"></div>-->
+                                    <!--<p>所属库：逃犯</p>-->
+                                    <!--</div>-->
+                                    <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="baike369"></div>-->
+
+                                    <!--右列表模板结束-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!--报警研判流程图-->
+            <div data-options="region:'east',border:false">
+                <div class="easyui-panel" data-options="fit:true,iconCls:'icon-rosette_blue',border:false" title="研判流程">
+                    <div class="judge-statu-container">
+                        <!--1 floor-->
+                        <div class="judge-statu-main judge-statu-main-1">
+                            <div class="judge-statu-main-img judge-statu-main-img-1">
+                                未审核
+                            </div>
+                            <div class="judge-statu-main-info judge-statu-main-info-1">
+                                审核流程>>
+                            </div>
+                        </div>
+                        <!--选择 1-->
+                        <div class="judge-statu-info judge-statu-info-1" id="selectInfo1">
+                            <div class="judge-statu-info-left"></div>
+                            <div class="judge-statu-info-title ">审核信息</div>
+                            <div style="padding-top:2px;padding-bottom:2px;padding-left: 15px;">
+                                <p>审核单位：<select class="easyui-combotree" id="auditCompany"
+                                                data-options="method:'get',url:' /ns/police/companyList',valueField:'id',textField:'text'"
+                                                style="width:132px;">
+                                </select></p>
+                                <p>审核人&#12288;：<select class="easyui-combobox" id="auditPerson" name="auditPerson"
+                                                           style="width:132px;">
+                                </select></p>
+                                <p>审核时间：<span class="auditTime"></span></p>
+                            </div>
+                        </div>
+                        <!--展示 1-->
+                        <div class="judge-statu-info judge-statu-info-1" id="showInfo1">
+                            <div class="judge-statu-info-left"></div>
+                            <div class="judge-statu-info-title ">审核信息</div>
+                            <div style="padding-top:22px;padding-bottom:22px;padding-left: 15px;">
+                                <p>审&nbsp;核&nbsp;人：</p>
+                                <p>审核时间：</p>
+                            </div>
+                        </div>
+                        <div class="judge-statu-direction judge-statu-direction-1"></div>
+                        <!--2 floor-->
+                        <div class="judge-statu-main judge-statu-main-2">
+                            <div class="judge-statu-main-img judge-statu-main-img-2">
+                                出警信息
+                            </div>
+                            <p style="color: #0e0e0e;font-size: 14px;text-align: center">是否需要出警？</p>
+                            <div class="judge-statu-main-info judge-statu-main-info-2">
+                                <input type="radio" name="isP" value="true">是
+                                <input type="radio" name="isP" value="false">否
+                            </div>
+                        </div>
+                        <style>
+                            .judge-statu-container .tree-title {
+                                font-size: 12px;
+                            }
+                        </style>
+                        <!--选择2-->
+                        <div class="judge-statu-info judge-statu-info-2" id="selectInfo2">
+                            <div class="judge-statu-info-left"></div>
+                            <div class="judge-statu-info-title ">出警信息</div>
+                            <div style="padding-top:22px;padding-bottom:22px;padding-left: 15px;height:319px;">
+                                <p>出警单位：<select class="easyui-combotree" name="pResCompany" id="pResCompany"
+                                                data-options="method:'get',url:' /ns/police/companyList',valueField:'id',textField:'text'"
+                                                style="width:132px;">
+                                </select></p>
+                                <p>出警人&#12288;：<select class="easyui-combobox" name="pResPerson" id="pResPerson"
+                                                       style="width:132px;">
+                                </select></p>
+                                <p>出警时间：<input class="easyui-datetimebox" name="pResTime" id="pResTime"
+                                               style="width:132px;"/>
+                                </p>
+                                <p>出警事由：<select class="easyui-combobox" name="pResReason" id="pResReason"
+                                                style="width:132px;">
+                                    <option value="事由1">事由1</option>
+                                </select></p>
+                                <p>出警结果：<select class="easyui-combobox" name="pResResult" id="pResResult"
+                                                style="width:132px;">
+                                    <option value="结果1">结果1</option>
+                                </select></p>
+                                <p style="text-align: right;padding-right: 17px;"><a class="submitPRes"></a></p>
+                                <br/>
+                                <p class="errorMsg"></p>
+                                <input type="hidden" id="hitId">
+                                <input type="hidden" id="hitTime">
+                            </div>
+                        </div>
+                        <!--展示2-->
+                        <div class="judge-statu-info judge-statu-info-2" id="showInfo2">
+                            <div class="judge-statu-info-left"></div>
+                            <div class="judge-statu-info-title ">出警信息</div>
+                            <div style="padding-top:22px;padding-bottom:22px;padding-left: 15px;height:319px;">
+                                <p>出警单位：</p>
+                                <p>出警人&#12288;：</p>
+                                <p>出警时间：</p>
+                                <p>出警事由：</p>
+                                <p>出警结果：</p>
+                            </div>
+                        </div>
+                        <div class="judge-statu-direction judge-statu-direction-2"></div>
+                        <!--3 floor-->
+                        <div class="judge-statu-main judge-statu-main-3">
+                            <div class="judge-statu-main-img judge-statu-main-img-3">
+                                完成审核
+                            </div>
+                            <div class="judge-statu-main-info judge-statu-main-info-3">
+                                流程结束
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

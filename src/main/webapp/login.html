@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统</title>
+    <link rel="stylesheet" type="text/css"
+          href="themes/bootstrap/easyui.css">
+    <!--<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">-->
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <!--[if IE 6]>
+    <script>
+        function correctPNG () {
+            for ( var i = 0 ; i < document.images.length ; i++ ) {
+                var img = document.images[ i ];
+                var imgName = img.src.toUpperCase ();
+                if ( imgName.substring ( imgName.length - 3 , imgName.length ) == "PNG" ) {
+                    var imgID = (img.id) ? "id='" + img.id + "' " : "";
+                    var imgClass = (img.className) ? "class='" + img.className + "' " : "";
+                    var imgTitle = (img.title) ? "title='" + img.title + "' " : "title='" + img.alt + "' ";
+                    var imgStyle = "display:inline-block;" + img.style.cssText;
+                    if ( img.align == "left" ) imgStyle = "float:left;" + imgStyle;
+                    if ( img.align == "right" ) imgStyle = "float:right;" + imgStyle;
+                    if ( img.parentElement.href ) imgStyle = "cursor:hand;" + imgStyle;
+                    var strNewHTML = "<span " + imgID + imgClass + imgTitle + "style=\"" + "width:" + img.width + "px; height:" + img.height + "px;" + imgStyle + ";"
+                            + "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader" + "(src='" + img.src + "', sizingMethod='scale');\"></span>";
+                    img.outerHTML = strNewHTML;
+                    i = i - 1;
+                }
+            }
+        }
+        window.attachEvent ( "onload" , correctPNG );
+    </script>
+    <![endif]--> ​
+</head>
+<body style="background-image: url('img/bg.jpg');">
+<div id="login-panel"
+     style="padding: 30px 60px;height:503px">
+    <div style="text-align: center">
+        <img alt="login" src="img/login_03.png">
+    </div>
+    <div
+            style="background-image: url('img/login_bg.png');background-repeat: no-repeat;_background:none; _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/login_bg.png' ,sizingMethod='crop');  width: 530px; height: 229px;padding-top:150px; margin: 0 auto;">
+        <div
+                style="width: 100%; height:262px;">
+            <div style="margin:0 auto;margin-bottom:20px;background-image:url('img/login_14.png');width:359px;height:45px;">
+                <input type="text" name="username"
+                       style="width:314px; height:42px;font-size:35px;border:none;background: none"/>
+            </div>
+            <div style="margin:0 auto;margin-bottom:20px;background-image: url('img/login_16.png');width:359px;height:45px;">
+                <input type="password" name="password"
+                       style="width:314px; height:42px;font-size:35px;border:none;background: none"/>
+            </div>
+            <div id="loginSubmit">登&#12288;陆</div>
+        </div>
+        <div class="versionInfo">
+            <p>检测到您的浏览器版本过低，为了更好的用户体验，向您推荐下列浏览器</p>
+            <p></p>
+            <p>
+                <a href="/ns/software/360fast.exe" target="_blank">360极速浏览器</a>
+                &#12288;|&#12288;
+                <a href="/ns/software/ff.exe" target="_blank">firefox浏览器</a></p>
+        </div>
+        <style>
+            .versionInfo {
+                color: red;
+                text-align: center;
+                display: none;
+                font-weight: bold;
+            }
+
+            #loginSubmit {
+                margin: 0 auto;
+                margin-bottom: 20px;
+                background-image: url('img/button.png');
+                background-repeat: no-repeat;
+                width: 359px;
+                height: 45px;
+                text-align: center;
+                line-height: 45px;
+                cursor: pointer;
+                color: white;
+                font-weight: bold;
+            }
+
+            #loginSubmit:hover {
+                background-image: url('img/button_pre.png');
+            }
+        </style>
+    </div>
+</div>
+</div>
+
+<script>
+    $ ( function () {
+        /**
+         * ie6 检测
+         * createTime:  2016/7/20
+         */
+        var ie6 = isIe6 ();
+        if ( ie6 ) {
+            $ ( ".versionInfo" ).show ();
+            $ ( "#loginSubmit" ).css ( "background-image" , "url('img/button2.png')" );
+        }
+        /**
+         * 动态布局
+         * createTime:  2016/7/20
+         */
+        var loginHeight = $ ( "#login-panel" ).height ();
+        $ ( "#login-panel" ).css ( {
+            position : 'fixed' ,
+            top : (mass.height - loginHeight) / 2 ,
+            left : (mass.width - 700) / 2
+        } );
+
+        //登陆
+        $ ( "#loginSubmit" ).click ( function () {
+            if ( ie6 ) {
+                $.messager.alert ( "警告" , "浏览器版本过低，请先升级浏览器" );
+                return;
+            }
+            var username = $ ( "input[name='username']" ).val ();
+            var password = $ ( "input[name='password']" ).val ();
+            //                var username = "admin";
+            //                var password ="admin";
+            $.post ( " /ns/user/login" , {
+                username : username ,
+                password : password
+            } , function ( data ) {
+                if ( data.statu == "success" ) {
+                    setCookie ( "user" , username ); //设置cookie
+                    window.location.href = "index.html";
+                } else {
+                    $.messager.alert ( '错误' , data.msg );
+                }
+            } )
+        } )
+
+        //键盘监听回车
+        $ ( document ).keydown ( function ( event ) {
+            if ( event.keyCode == 13 ) {
+                $ ( '#loginSubmit' ).trigger ( "click" );
+            }
+        } );
+
+    } )
+</script>
+
+</body>
+</html>
+
+

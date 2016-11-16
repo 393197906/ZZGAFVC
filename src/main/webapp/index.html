@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人脸识别系统-实时监控</title>
+    <link rel="stylesheet" type="text/css" href="themes/bootstrap/easyui.css">
+    <!--   <link rel="stylesheet" type="text/css" href="themes/default/easyui.css">-->
+
+    <!--<link rel="stylesheet" type="text/css" href="themes/gray/easyui.css">
+    -->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">
+    -->
+    <!--<link rel="stylesheet" type="text/css" href="themes/metro/easyui.css">
+    -->
+
+    <link rel="stylesheet" type="text/css" href="themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.min.1.4.4.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/index/index.js"></script>
+    <script type="text/javascript" src="js/highcharts.js"></script>
+</head>
+<body>
+<div class="easyui-layout" data-options="fit:true" id="ly">
+    <div data-options="region:'north'" style="height:150px;">
+        <div class="nav-bg">
+            <div class="sub-nav"><a href="/ns/software/WebComponents.exe" target="_blank">VLC视频播放插件</a>&#12288;|&#12288;<a href="/ns/software/VideoDetective-Setup.exe" target="_blank">批量注册与视频分析工具</a>&#12288;|&#12288;<a
+                    href="#">帮助文档</a></div>
+            <div class="nav-container">
+                <ul class="nav">
+                    <a href="index.html">
+                        <li class="active">首页</li>
+                    </a>
+                    <a href="monitor.html">
+                        <li>实时监控</li>
+                    </a>
+                    <a href="faceDataBase.html">
+                        <li>人像库管理</li>
+                    </a>
+                    <a href="search.html">
+                        <li>查询检索</li>
+                    </a>
+                    <a href="judge.html">
+                        <li>报警研判</li>
+                    </a>
+                </ul>
+
+                <div class="nav-right">
+                    <span></span> <a href="#" class="logout">注销</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--导航-->
+    <!--左侧-->
+    <div data-options="region:'west',split:false,border:false">
+        <div class="easyui-layout" data-options="fit:true" id="west-ly">
+            <!--左上-->
+            <div data-options="region:'north',border:false">
+                <div class="easyui-panel" id="cameraListCon" style="padding:5px" data-options="fit:true,border:true"
+                     title="设备清单"
+                     iconCls='icon-my_camera1'>
+                    <ul class="easyui-tree" id="cameralist"></ul>
+                </div>
+            </div>
+            <!--左下-->
+            <div data-options="region:'center',border:false">
+                <div class="easyui-panel" title="登录信息"
+                     data-options="fit:true,iconCls:'icon-my_login_statu',border:true">
+                    <table class="easyui-datagrid" data-options="fit:true,border:false" id="loginInfo">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--中间-->
+    <div data-options="region:'center',border:false">
+        <div class="easyui-layout" data-options="fit:true" id="center-ly">
+            <!--中上 （人像库列表）-->
+            <div data-options="region:'north',border:false">
+                <div class="easyui-layout" data-options="fit:true" id="center-top-ly">
+                    <div data-options="region:'west',border:false">
+                        <div class="easyui-panel" title="人像库清单" style="padding:5px"
+                             data-options="fit:true,iconCls:'icon-my_facelist',border:true">
+                            <ul class="easyui-tree" id="fdList"></ul>
+                        </div>
+                    </div>
+                    <div data-options="region:'center',border:false">
+                        <div class="easyui-panel" title="抓拍统计" style="padding:5px"
+                             data-options="fit:true,iconCls:'icon-my_capture',border:true">
+                            <div id="capture"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--中下-->
+            <div data-options="region:'center',border:false">
+                <div class="easyui-layout" data-options="fit:true" id="center-bottom-ly">
+                    <div data-options="region:'west',border:false">
+                        <div class="easyui-panel" title="报警统计" style="padding:5px"
+                             data-options="fit:true,iconCls:'icon-my_alert',border:true">
+                            <div id="alert"></div>
+                        </div>
+                    </div>
+                    <div data-options="region:'center',border:false">
+                        <div class="easyui-panel" title="研判信息" id="responedInfo" style="padding:5px"
+                             data-options="fit:true,iconCls:'icon-my_wrench',border:true">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--右侧-->
+    <div data-options="region:'east',split:false,border:false">
+        <div class="easyui-layout" data-options="fit:true" id="east-ly">
+            <!--右上-->
+            <div data-options="region:'north',border:false">
+                <div class="easyui-panel" title="服务状态" id="service-statu" style="padding:15px;text-align: right"
+                     data-options="fit:true,iconCls:'icon-my_service_statu',border:true">
+                  <!--   <p><span class="statu">摄像机测11试1:</span><span class="statu-info statu-run">运行</span>
+                    <p><span class="statu">摄像机测223试1:</span><span class="statu-info statu-idle">空闲</span></p>
+                    <p><span class="statu">摄像机测1试1:</span><span class="statu-info statu-fault">错误</span></p>
+                    <p><span class="statu">摄像机22222测试1:</span><span class="statu-info statu-stopped">停止</span></p> -->
+                </div>
+            </div>
+            <!--右下-->
+            <div data-options="region:'center',border:false">
+                <!--<div class="easyui-panel" title="资源占用"-->
+                <!--data-options="fit:true,iconCls:'icon-my_server_chart',border:true">-->
+                <div class="easyui-panel" title="日历工具"
+                     data-options="fit:true,iconCls:'icon-calendar',border:true">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
